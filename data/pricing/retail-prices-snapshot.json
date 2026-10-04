@@ -1,0 +1,1426 @@
+{
+ "label": "LIST-PRICE SNAPSHOT: Azure Retail Prices API, pay-as-you-go USD list prices. Not an invoice; excludes EA/MCA/CSP discounts.",
+ "source": "https://prices.azure.com/api/retail/prices",
+ "api_version": "2023-01-01-preview",
+ "region": "eastus2",
+ "items": [
+  {
+   "key": "aoai.gpt-4o-mini.input_1k",
+   "serviceName": "Foundry Models",
+   "productName": "Azure OpenAI",
+   "skuName": "gpt-4o-mini-0718-Inp-glbl",
+   "meterName": "gpt-4o-mini-0718-Inp-glbl Tokens",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.00015
+    }
+   ]
+  },
+  {
+   "key": "aoai.gpt-4o-mini.output_1k",
+   "serviceName": "Foundry Models",
+   "productName": "Azure OpenAI",
+   "skuName": "gpt-4o-mini-0718-Outp-glbl",
+   "meterName": "gpt-4o-mini-0718-Outp-glbl Tokens",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0006
+    }
+   ]
+  },
+  {
+   "key": "aoai.gpt-4o.cached_input_1k",
+   "serviceName": "Foundry Models",
+   "productName": "Azure OpenAI",
+   "skuName": "gpt 4o 1120 cached Inp glbl",
+   "meterName": "gpt 4o 1120 cached Inp glbl Tokens",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.00125
+    }
+   ]
+  },
+  {
+   "key": "aoai.gpt-4o.input_1k",
+   "serviceName": "Foundry Models",
+   "productName": "Azure OpenAI",
+   "skuName": "gpt 4o 1120 Inp glbl",
+   "meterName": "gpt 4o 1120 Inp glbl Tokens",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0025
+    }
+   ]
+  },
+  {
+   "key": "aoai.gpt-4o.output_1k",
+   "serviceName": "Foundry Models",
+   "productName": "Azure OpenAI",
+   "skuName": "gpt 4o 1120 Outp glbl",
+   "meterName": "gpt 4o 1120 Outp glbl Tokens",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.01
+    }
+   ]
+  },
+  {
+   "key": "aoai.ptu.global_hour",
+   "serviceName": "Foundry Models",
+   "productName": "Azure OpenAI",
+   "skuName": "Provisioned Managed Global",
+   "meterName": "Provisioned Managed Global Unit",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1/Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 1.0
+    }
+   ]
+  },
+  {
+   "key": "appservice.B1",
+   "serviceName": "Azure App Service",
+   "productName": "Azure App Service Basic Plan - Linux",
+   "skuName": "B1",
+   "meterName": "B1",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.017
+    }
+   ]
+  },
+  {
+   "key": "appservice.P0v3",
+   "serviceName": "Azure App Service",
+   "productName": "Azure App Service Premium v3 Plan - Linux",
+   "skuName": "P0v3",
+   "meterName": "P0v3 App",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0775
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.058125,
+    "3 Years": 0.042625
+   }
+  },
+  {
+   "key": "appservice.P1v3",
+   "serviceName": "Azure App Service",
+   "productName": "Azure App Service Premium v3 Plan - Linux",
+   "skuName": "P1 v3",
+   "meterName": "P1 v3 App",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.155
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.11625,
+    "3 Years": 0.08525
+   }
+  },
+  {
+   "key": "appservice.P2v3",
+   "serviceName": "Azure App Service",
+   "productName": "Azure App Service Premium v3 Plan - Linux",
+   "skuName": "P2 v3",
+   "meterName": "P2 v3 App",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.31
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.2325,
+    "3 Years": 0.1705
+   }
+  },
+  {
+   "key": "appservice.P3v3",
+   "serviceName": "Azure App Service",
+   "productName": "Azure App Service Premium v3 Plan - Linux",
+   "skuName": "P3 v3",
+   "meterName": "P3 v3 App",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.62
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.465,
+    "3 Years": 0.341
+   }
+  },
+  {
+   "key": "bandwidth.internet_egress_gb",
+   "serviceName": "Bandwidth",
+   "productName": "Rtn Preference: MGN",
+   "skuName": "Standard",
+   "meterName": "Standard Data Transfer Out",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0
+    },
+    {
+     "from_units": 100.0,
+     "price": 0.087
+    },
+    {
+     "from_units": 10335.0,
+     "price": 0.083
+    },
+    {
+     "from_units": 51295.0,
+     "price": 0.07
+    },
+    {
+     "from_units": 153695.0,
+     "price": 0.05
+    },
+    {
+     "from_units": 512095.0,
+     "price": 0.05
+    }
+   ]
+  },
+  {
+   "key": "blob.archive.gb_month",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Archive LRS",
+   "meterName": "Archive LRS Data Stored",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB/Month",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.002
+    }
+   ]
+  },
+  {
+   "key": "blob.archive.read_10k",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Archive LRS",
+   "meterName": "Archive Read Operations",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "10K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 5.0
+    }
+   ]
+  },
+  {
+   "key": "blob.archive.retrieval_gb",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Archive LRS",
+   "meterName": "Archive Data Retrieval",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.02
+    }
+   ]
+  },
+  {
+   "key": "blob.archive.write_10k",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Archive LRS",
+   "meterName": "Archive LRS Write Operations",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "10K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.1
+    }
+   ]
+  },
+  {
+   "key": "blob.cold.gb_month",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Cold LRS",
+   "meterName": "Cold LRS Data Stored",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB/Month",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0036
+    }
+   ]
+  },
+  {
+   "key": "blob.cold.read_10k",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Cold LRS",
+   "meterName": "Cold LRS Read Operations",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "10K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.1
+    }
+   ]
+  },
+  {
+   "key": "blob.cold.retrieval_gb",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Cold LRS",
+   "meterName": "Cold LRS Data Retrieval",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.03
+    }
+   ]
+  },
+  {
+   "key": "blob.cold.write_10k",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Cold LRS",
+   "meterName": "Cold LRS Write Operations",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "10K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.18
+    }
+   ]
+  },
+  {
+   "key": "blob.cool.gb_month",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Cool LRS",
+   "meterName": "Cool LRS Data Stored",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB/Month",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.01
+    }
+   ]
+  },
+  {
+   "key": "blob.cool.read_10k",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Cool LRS",
+   "meterName": "Cool Read Operations",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "10K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.01
+    }
+   ]
+  },
+  {
+   "key": "blob.cool.retrieval_gb",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Cool LRS",
+   "meterName": "Cool Data Retrieval",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.01
+    }
+   ]
+  },
+  {
+   "key": "blob.cool.write_10k",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Cool LRS",
+   "meterName": "Cool LRS Write Operations",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "10K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.1
+    }
+   ]
+  },
+  {
+   "key": "blob.hot.gb_month",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Hot LRS",
+   "meterName": "Hot LRS Data Stored",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB/Month",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0184
+    },
+    {
+     "from_units": 51200.0,
+     "price": 0.017664
+    },
+    {
+     "from_units": 512000.0,
+     "price": 0.016928
+    }
+   ]
+  },
+  {
+   "key": "blob.hot.read_10k",
+   "serviceName": "Storage",
+   "productName": "General Block Blob v2",
+   "skuName": "Hot LRS",
+   "meterName": "Hot Read Operations",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "10K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.004
+    }
+   ]
+  },
+  {
+   "key": "containerapps.gib_active_second",
+   "serviceName": "Azure Container Apps",
+   "productName": "Azure Container Apps",
+   "skuName": "Standard",
+   "meterName": "Standard Memory Active Usage",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GiB Second",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 3e-06
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 2.55e-06,
+    "3 Years": 2.49e-06
+   }
+  },
+  {
+   "key": "containerapps.gib_idle_second",
+   "serviceName": "Azure Container Apps",
+   "productName": "Azure Container Apps",
+   "skuName": "Standard",
+   "meterName": "Standard Memory Idle Usage",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GiB Second",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 3e-06
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 2.55e-06,
+    "3 Years": 2.49e-06
+   }
+  },
+  {
+   "key": "containerapps.requests_million",
+   "serviceName": "Azure Container Apps",
+   "productName": "Azure Container Apps",
+   "skuName": "Standard",
+   "meterName": "Standard Requests",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1M",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.4
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.34,
+    "3 Years": 0.332
+   }
+  },
+  {
+   "key": "containerapps.vcpu_active_second",
+   "serviceName": "Azure Container Apps",
+   "productName": "Azure Container Apps",
+   "skuName": "Standard",
+   "meterName": "Standard vCPU Active Usage",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Second",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 2.4e-05
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 2.04e-05,
+    "3 Years": 1.992e-05
+   }
+  },
+  {
+   "key": "containerapps.vcpu_idle_second",
+   "serviceName": "Azure Container Apps",
+   "productName": "Azure Container Apps",
+   "skuName": "Standard",
+   "meterName": "Standard vCPU Idle Usage",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Second",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 3e-06
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 2.55e-06,
+    "3 Years": 2.49e-06
+   }
+  },
+  {
+   "key": "disk.E10",
+   "serviceName": "Storage",
+   "productName": "Standard SSD Managed Disks",
+   "skuName": "E10 LRS",
+   "meterName": "E10 LRS Disk",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1/Month",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 9.6
+    }
+   ]
+  },
+  {
+   "key": "disk.E30",
+   "serviceName": "Storage",
+   "productName": "Standard SSD Managed Disks",
+   "skuName": "E30 LRS",
+   "meterName": "E30 LRS Disk",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1/Month",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 76.8
+    }
+   ]
+  },
+  {
+   "key": "disk.P10",
+   "serviceName": "Storage",
+   "productName": "Premium SSD Managed Disks",
+   "skuName": "P10 LRS",
+   "meterName": "P10 LRS Disk",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1/Month",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 17.92
+    }
+   ]
+  },
+  {
+   "key": "disk.P30",
+   "serviceName": "Storage",
+   "productName": "Premium SSD Managed Disks",
+   "skuName": "P30 LRS",
+   "meterName": "P30 LRS Disk",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1/Month",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 122.88
+    }
+   ]
+  },
+  {
+   "key": "frontdoor.standard.base_month",
+   "serviceName": "Azure Front Door Service",
+   "productName": "Azure Front Door",
+   "skuName": "Standard",
+   "meterName": "Standard Base Fees",
+   "armRegionName": "Zone 1",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1/Month",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 35.0
+    }
+   ]
+  },
+  {
+   "key": "frontdoor.standard.egress_gb",
+   "serviceName": "Azure Front Door Service",
+   "productName": "Azure Front Door",
+   "skuName": "Standard",
+   "meterName": "Standard Data Transfer Out",
+   "armRegionName": "Zone 1",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0825
+    },
+    {
+     "from_units": 10000.0,
+     "price": 0.065002
+    },
+    {
+     "from_units": 50000.0,
+     "price": 0.056001
+    },
+    {
+     "from_units": 150000.0,
+     "price": 0.014083
+    },
+    {
+     "from_units": 500000.0,
+     "price": 0.00693
+    },
+    {
+     "from_units": 1000000.0,
+     "price": 0.005742
+    },
+    {
+     "from_units": 5000000.0,
+     "price": 0.005404
+    }
+   ]
+  },
+  {
+   "key": "frontdoor.standard.requests_10k",
+   "serviceName": "Azure Front Door Service",
+   "productName": "Azure Front Door",
+   "skuName": "Standard",
+   "meterName": "Standard Requests",
+   "armRegionName": "Zone 1",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "10K",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.009
+    },
+    {
+     "from_units": 25000.0,
+     "price": 0.0081
+    },
+    {
+     "from_units": 100000.0,
+     "price": 0.00729
+    },
+    {
+     "from_units": 500000.0,
+     "price": 0.006561
+    }
+   ]
+  },
+  {
+   "key": "functions.flex.ondemand_executions_10",
+   "serviceName": "Functions",
+   "productName": "Flex Consumption",
+   "skuName": "On Demand",
+   "meterName": "On Demand Total Executions",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "10",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0
+    },
+    {
+     "from_units": 25000.0,
+     "price": 4e-06
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 3.32e-06,
+    "3 Years": 3.32e-06
+   }
+  },
+  {
+   "key": "functions.flex.ondemand_gb_second",
+   "serviceName": "Functions",
+   "productName": "Flex Consumption",
+   "skuName": "On Demand",
+   "meterName": "On Demand Execution Time",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB Second",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0
+    },
+    {
+     "from_units": 100000.0,
+     "price": 2.6e-05
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 2.158e-05,
+    "3 Years": 2.158e-05
+   }
+  },
+  {
+   "key": "functions.premium.gib_hour",
+   "serviceName": "Functions",
+   "productName": "Premium Functions",
+   "skuName": "Premium",
+   "meterName": "Premium Memory Duration",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GiB Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0114
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.009462,
+    "3 Years": 0.009462
+   }
+  },
+  {
+   "key": "functions.premium.vcpu_hour",
+   "serviceName": "Functions",
+   "productName": "Premium Functions",
+   "skuName": "Premium",
+   "meterName": "Premium vCPU Duration",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.16
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.1328,
+    "3 Years": 0.1328
+   }
+  },
+  {
+   "key": "license.sql_enterprise.4vcpu_hour",
+   "serviceName": "Virtual Machines Licenses",
+   "productName": "SQL Server Enterprise",
+   "skuName": "1-4 vCPU VM",
+   "meterName": "1-4 vCPU VM License",
+   "armRegionName": "",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 1.5
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 1.5,
+    "3 Years": 1.5
+   }
+  },
+  {
+   "key": "license.sql_enterprise.8vcpu_hour",
+   "serviceName": "Virtual Machines Licenses",
+   "productName": "SQL Server Enterprise",
+   "skuName": "8 vCPU VM",
+   "meterName": "8 vCPU VM License",
+   "armRegionName": "",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 3.0
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 3.0,
+    "3 Years": 3.0
+   }
+  },
+  {
+   "key": "license.sql_standard.4vcpu_hour",
+   "serviceName": "Virtual Machines Licenses",
+   "productName": "SQL Server Standard",
+   "skuName": "1-4 vCPU VM",
+   "meterName": "1-4 vCPU VM License",
+   "armRegionName": "",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.4
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.4,
+    "3 Years": 0.4
+   }
+  },
+  {
+   "key": "license.sql_standard.8vcpu_hour",
+   "serviceName": "Virtual Machines Licenses",
+   "productName": "SQL Server Standard",
+   "skuName": "8 vCPU VM",
+   "meterName": "8 vCPU VM License",
+   "armRegionName": "",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.8
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.8,
+    "3 Years": 0.8
+   }
+  },
+  {
+   "key": "loganalytics.analytics_ingest_gb",
+   "serviceName": "Log Analytics",
+   "productName": "Log Analytics",
+   "skuName": "Analytics Logs",
+   "meterName": "Analytics Logs Data Ingestion",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0
+    },
+    {
+     "from_units": 5.0,
+     "price": 2.76
+    }
+   ]
+  },
+  {
+   "key": "logicapps.consumption.standard_action",
+   "serviceName": "Logic Apps",
+   "productName": "Logic Apps",
+   "skuName": "Consumption",
+   "meterName": "Consumption Standard Connector Actions",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.000125
+    }
+   ]
+  },
+  {
+   "key": "logicapps.standard.gib_hour",
+   "serviceName": "Logic Apps",
+   "productName": "Logic Apps",
+   "skuName": "Standard",
+   "meterName": "Standard Memory Duration",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GiB Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.0137
+    }
+   ]
+  },
+  {
+   "key": "logicapps.standard.vcpu_hour",
+   "serviceName": "Logic Apps",
+   "productName": "Logic Apps",
+   "skuName": "Standard",
+   "meterName": "Standard vCPU Duration",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.192
+    }
+   ]
+  },
+  {
+   "key": "publicip.standard_static_hour",
+   "serviceName": "Virtual Network",
+   "productName": "IP Addresses",
+   "skuName": "Standard",
+   "meterName": "Standard IPv4 Static Public IP",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.005
+    }
+   ]
+  },
+  {
+   "key": "redis.basic.C0",
+   "serviceName": "Redis Cache",
+   "productName": "Azure Redis Cache Basic",
+   "skuName": "C0",
+   "meterName": "C0 Cache",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.022
+    }
+   ]
+  },
+  {
+   "key": "redis.basic.C1",
+   "serviceName": "Redis Cache",
+   "productName": "Azure Redis Cache Basic",
+   "skuName": "C1",
+   "meterName": "C1 Cache",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.055
+    }
+   ]
+  },
+  {
+   "key": "redis.standard.C1",
+   "serviceName": "Redis Cache",
+   "productName": "Azure Redis Cache Standard",
+   "skuName": "C1",
+   "meterName": "C1 Cache",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.138
+    }
+   ]
+  },
+  {
+   "key": "vm.D2s_v5.linux.payg",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D2s_v5",
+   "meterName": "D2s v5",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.096
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.06624,
+    "3 Years": 0.04512
+   }
+  },
+  {
+   "key": "vm.D2s_v5.linux.ri1y",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D2s_v5",
+   "meterName": "D2s v5",
+   "armRegionName": "eastus2",
+   "type": "Reservation",
+   "reservationTerm": "1 Year",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 519.0
+    }
+   ]
+  },
+  {
+   "key": "vm.D2s_v5.linux.ri3y",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D2s_v5",
+   "meterName": "D2s v5",
+   "armRegionName": "eastus2",
+   "type": "Reservation",
+   "reservationTerm": "3 Years",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 997.0
+    }
+   ]
+  },
+  {
+   "key": "vm.D2s_v5.linux.spot",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D2s_v5 Spot",
+   "meterName": "D2s v5 Spot",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.030586
+    }
+   ]
+  },
+  {
+   "key": "vm.D2s_v5.windows.payg",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series Windows",
+   "skuName": "Standard_D2s_v5",
+   "meterName": "D2s v5",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.188
+    }
+   ]
+  },
+  {
+   "key": "vm.D4s_v5.linux.payg",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D4s_v5",
+   "meterName": "D4s v5",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.192
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.13248,
+    "3 Years": 0.09024
+   }
+  },
+  {
+   "key": "vm.D4s_v5.linux.ri1y",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D4s_v5",
+   "meterName": "D4s v5",
+   "armRegionName": "eastus2",
+   "type": "Reservation",
+   "reservationTerm": "1 Year",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 1038.0
+    }
+   ]
+  },
+  {
+   "key": "vm.D4s_v5.linux.ri3y",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D4s_v5",
+   "meterName": "D4s v5",
+   "armRegionName": "eastus2",
+   "type": "Reservation",
+   "reservationTerm": "3 Years",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 1993.0
+    }
+   ]
+  },
+  {
+   "key": "vm.D4s_v5.linux.spot",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D4s_v5 Spot",
+   "meterName": "D4s v5 Spot",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.061171
+    }
+   ]
+  },
+  {
+   "key": "vm.D4s_v5.windows.payg",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series Windows",
+   "skuName": "Standard_D4s_v5",
+   "meterName": "D4s v5",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.376
+    }
+   ]
+  },
+  {
+   "key": "vm.D8s_v5.linux.payg",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D8s_v5",
+   "meterName": "D8s v5",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.384
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.26496,
+    "3 Years": 0.18048
+   }
+  },
+  {
+   "key": "vm.D8s_v5.linux.ri1y",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D8s_v5",
+   "meterName": "D8s v5",
+   "armRegionName": "eastus2",
+   "type": "Reservation",
+   "reservationTerm": "1 Year",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 2075.0
+    }
+   ]
+  },
+  {
+   "key": "vm.D8s_v5.linux.ri3y",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D8s_v5",
+   "meterName": "D8s v5",
+   "armRegionName": "eastus2",
+   "type": "Reservation",
+   "reservationTerm": "3 Years",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 3986.0
+    }
+   ]
+  },
+  {
+   "key": "vm.D8s_v5.linux.spot",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series",
+   "skuName": "Standard_D8s_v5 Spot",
+   "meterName": "D8s v5 Spot",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.122342
+    }
+   ]
+  },
+  {
+   "key": "vm.D8s_v5.windows.payg",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Dsv5 Series Windows",
+   "skuName": "Standard_D8s_v5",
+   "meterName": "D8s v5",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.752
+    }
+   ]
+  },
+  {
+   "key": "vm.E4s_v5.linux.payg",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Esv5 Series",
+   "skuName": "E4s v5",
+   "meterName": "E4s v5",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.252
+    }
+   ],
+   "savingsPlan": {
+    "1 Year": 0.1705536,
+    "3 Years": 0.1193724
+   }
+  },
+  {
+   "key": "vm.E4s_v5.linux.ri1y",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Esv5 Series",
+   "skuName": "E4s v5",
+   "meterName": "E4s v5",
+   "armRegionName": "eastus2",
+   "type": "Reservation",
+   "reservationTerm": "1 Year",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 1302.0
+    }
+   ]
+  },
+  {
+   "key": "vm.E4s_v5.linux.ri3y",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Esv5 Series",
+   "skuName": "E4s v5",
+   "meterName": "E4s v5",
+   "armRegionName": "eastus2",
+   "type": "Reservation",
+   "reservationTerm": "3 Years",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 2517.0
+    }
+   ]
+  },
+  {
+   "key": "vm.E4s_v5.linux.spot",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Esv5 Series",
+   "skuName": "E4s v5 Spot",
+   "meterName": "E4s v5 Spot",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.098885
+    }
+   ]
+  },
+  {
+   "key": "vm.E4s_v5.windows.payg",
+   "serviceName": "Virtual Machines",
+   "productName": "Virtual Machines Esv5 Series Windows",
+   "skuName": "E4s v5",
+   "meterName": "E4s v5",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 Hour",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.436
+    }
+   ]
+  }
+ ]
+}
