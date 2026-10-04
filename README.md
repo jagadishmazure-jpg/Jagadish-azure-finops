@@ -157,7 +157,7 @@ pytest -q                               # 170 tests, offline
 ruff check . && ruff format --check .
 python scripts/generate_data.py --check # synthetic data matches the generator
 python scripts/render_docs.py --check   # doc outputs and code excerpts match the code
-python scripts/refresh_prices.py --check # snapshot is well formed (no network)
+python scripts/refresh_prices.py --check # compare the snapshot with the live Retail Prices API (network)
 ```
 
 ## Deploy
