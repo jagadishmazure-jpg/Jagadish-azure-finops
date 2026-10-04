@@ -148,9 +148,13 @@ cannot change anything.
 
 In Cost Management, create a scheduled export of type **cost and usage details (FOCUS)** to a
 storage container, daily, month to date. Download a file and place it at
-`data/focus/cost-export.csv`. The loader (`finops.focus`) reads the FOCUS columns it needs
-(`ResourceId`, `ResourceName`, `ServiceName`, `SkuId`, `EffectiveCost`, `ChargePeriodStart`,
-`ConsumedQuantity`, `Tags`, and so on); extra columns are ignored.
+`data/focus/cost-export.csv`. The loader (`finops.focus.read`) requires the FOCUS 1.0 columns listed
+in `finops.focus.COLUMNS` (`ResourceId`, `ServiceName`, `SkuId`, `EffectiveCost`,
+`ChargePeriodStart`, `ConsumedQuantity`, `Tags` and the rest of the subset) and stops with a clear
+error if one is missing; extra columns, such as the Azure `x_` extensions, are ignored.
+Allocation, showback, budgets and reconciliation (pattern 9 and the analyzer) work on a real
+export as-is. The synthetic `SkuId` values are readable labels; real ones are not, so anything
+keyed on SKU needs a small mapping step.
 
 ### 3. Inventory: Resource Graph
 
