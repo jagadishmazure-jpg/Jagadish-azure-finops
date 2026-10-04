@@ -79,8 +79,10 @@ def analyze() -> PatternResult:
             continue
         before = after = 0.0
         moves = {}
+        priced = []
         for b in c["buckets"]:
             tier, costs = choose_tier(b, c["max_rehydrate_hours"])
+            priced.append({"min_age": b["min_age"], "gb": b["gb"], "read_gb": b["read_gb"], "tier": tier, "monthly_by_tier": costs})
             before += bucket_cost("hot", b["gb"], b["read_gb"])
             after += costs[tier]
             moves[b["min_age"]] = tier
@@ -93,7 +95,7 @@ def analyze() -> PatternResult:
             PATTERN, f"{c['account']}/{c['container']}", f"{c['account']}/{c['container']}", f"lifecycle {path}",
             before, after, confidence="high", risk="low" if "archive" not in moves.values() else "medium",
             change={"op": "lifecycle-policy", "container": c["container"]},
-            evidence={"buckets": c["buckets"], "rehydrate_objective_hours": c["max_rehydrate_hours"]},
+            evidence={"buckets": priced, "rehydrate_objective_hours": c["max_rehydrate_hours"]},
             estimate=True,
         ))
     res.extra["policy"] = lifecycle_policy(plan)

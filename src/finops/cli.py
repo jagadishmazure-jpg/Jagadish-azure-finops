@@ -72,6 +72,9 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  {f.id} {f.resource_name}")
                 print(f"    evidence: {json.dumps(f.evidence, sort_keys=True)}")
                 print(f"    change:   {json.dumps(f.change, sort_keys=True)}")
+            if "policy" in res.extra:
+                print("  generated policy:")
+                print("\n".join("    " + line for line in json.dumps(res.extra["policy"], indent=2).splitlines()))
     elif args.cmd == "ai":
         from finops.ai.report import report
 
