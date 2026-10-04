@@ -73,8 +73,8 @@ Resource Graph alone would have shown a healthy plan with one app on it.
 
 1. Idle cost hides in always-on SKUs (WS, EP, App Service plans, warm replicas). Count usage, not
    resources.
-2. A budget alert on a small practice subscription is worth having: these two lines were most
-   of its spend. This repo's IaC deploys a $10 budget with alerts at 50%, 80%, 100% and a 110%
+2. A budget alert on a small practice subscription is worth having: $187 a month of idle cost
+   is easy to miss without one. This repo's IaC deploys a $10 budget with alerts at 50%, 80%, 100% and a 110%
    forecast.
 3. For practice and dev, prefer consumption hosting (Logic Apps Consumption, `minReplicas = 0`)
    by default; see [pattern 7](patterns/07-serverless.md) and [pattern 2](patterns/02-autoscale.md).

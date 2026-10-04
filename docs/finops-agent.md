@@ -28,8 +28,9 @@ flowchart LR
 ## What the analyzer does
 
 1. Runs every pattern and collects findings.
-2. **De-duplicates**: one resource cannot be both resized and deleted; the higher-confidence,
-   lower-risk finding wins and the conflict is recorded.
+2. **De-duplicates**: two findings that make the same kind of change to the same resource cannot
+   both ship; the larger saving is kept and the conflict is recorded. (Patterns also hand
+   resources to each other, for example p01 skips stopped VMs because p08 owns them.)
 3. **Ranks** by monthly saving, then risk.
 4. **Reconciles** each pattern's "current cost" against the FOCUS bill for the same resources
    (within 5%), so the agent cannot claim to save money that is not on the bill.

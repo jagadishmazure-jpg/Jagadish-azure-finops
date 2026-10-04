@@ -1,6 +1,7 @@
 """Command line entry point: ``finops <command>``.
 
     finops scan                 all ten patterns + the estate total
+    finops estate --top 10      estate totals and the top findings only
     finops pattern p05          one pattern
     finops ai                   AI FinOps report
     finops agent --top 5        ranked findings and a dry-run plan for the top N
@@ -42,6 +43,8 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="finops")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("scan")
+    e = sub.add_parser("estate", help="estate totals and the top findings only")
+    e.add_argument("--top", type=int, default=10)
     p = sub.add_parser("pattern")
     p.add_argument("id", help="p01 .. p10")
     p.add_argument("--evidence", action="store_true", help="also print each finding's evidence and change")
@@ -62,6 +65,8 @@ def main(argv: list[str] | None = None) -> int:
         for m in MODULES:
             print(import_module(f"finops.patterns.{m}").analyze().report())
         print(estate_report())
+    elif args.cmd == "estate":
+        print(estate_report(args.top))
     elif args.cmd == "pattern":
         mod = next((m for m in MODULES if m.startswith(args.id)), None)
         if not mod:
