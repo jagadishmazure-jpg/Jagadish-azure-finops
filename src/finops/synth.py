@@ -12,6 +12,8 @@ import math
 import random
 from typing import Any
 
+AKS_NODE_CORES = 3.6  # allocatable cores per D4s_v5 node
+AKS_TARGET = 0.8  # target node CPU utilization
 HOURS = 720  # a 30-day observation window, hourly
 DAYS = 30
 
@@ -71,12 +73,12 @@ def inventory() -> list[dict[str, Any]]:
         _r(P, "rg-dispatch-prod", VM, "vm-dispatch-api-02", "D8s_v5", _tags("CC-1001", "prod", "dispatch-team", "dispatch-api"), os="linux", power_state="running", profile="low"),
         _r(P, "rg-dispatch-prod", VM, "vm-dispatch-db-01", "E4s_v5", _tags("CC-1001", "prod", "dispatch-team", "dispatch-db"), os="windows", power_state="running", profile="memory-bound", sql_edition="standard", license_type=None),
         _r(P, "rg-dispatch-prod", VM, "vm-dispatch-legacy-01", "D4s_v5", _tags("CC-1001", "prod", "dispatch-team", "legacy-scheduler"), os="windows", power_state="running", profile="idle-ish", license_type=None),
-        _r(P, "rg-dispatch-prod", AKS, "aks-dispatch-prod", "D4s_v5", _tags("CC-1001", "prod", "dispatch-team", "dispatch-workers"), node_count=6, autoscaler=False, pod_cpu_per_node=3.2, profile="aks-diurnal"),
+        _r(P, "rg-dispatch-prod", AKS, "aks-dispatch-prod", "D4s_v5", _tags("CC-1001", "prod", "dispatch-team", "dispatch-workers"), node_count=6, autoscaler=False, profile="aks-diurnal"),
         _r(P, "rg-integration-prod", SITE, "la-invoice-intake", "WS1", _tags("CC-1001", "prod", "integration-team", "invoice-intake"), kind="workflowapp", plan_vcpu=1, plan_gib=3.5, monthly_runs=2000, actions_per_run=12, workflows=3, needs_vnet=False),
         _r(P, "rg-integration-prod", SITE, "fn-label-print", "EP1", _tags("CC-1001", "prod", "integration-team", "label-print"), kind="functionapp", plan_vcpu=1, plan_gib=3.5, monthly_executions=120000, avg_duration_s=0.4, memory_gb=0.5, needs_vnet=False, max_cold_start_s=10),
         _r(P, "rg-integration-prod", SITE, "fn-telemetry-ingest", "EP1", _tags("CC-1001", "prod", "integration-team", "telemetry-ingest"), kind="functionapp", plan_vcpu=1, plan_gib=3.5, monthly_executions=900_000_000, avg_duration_s=0.25, memory_gb=0.5, needs_vnet=False, max_cold_start_s=10),
         # --- Customer portal (CC-2002)
-        _r(P, "rg-portal-prod", PLAN, "asp-portal-prod", "P1v3", _tags("CC-2002", "prod", "web-team", "customer-portal"), instances=6, apps=2, autoscale=False, profile="web-weekly", rps_per_instance=180),
+        _r(P, "rg-portal-prod", PLAN, "asp-portal-prod", "P1v3", _tags("CC-2002", "prod", "web-team", "customer-portal"), instances=6, apps=2, autoscale=False, profile="web-weekly", rps_per_instance=250),
         _r(P, "rg-portal-prod", PLAN, "asp-partner-api", "P2v3", _tags("CC-2002", "prod", "web-team", "partner-api"), instances=2, apps=1, autoscale=False, profile="low"),
         _r(P, "rg-portal-prod", PLAN, "asp-tracking-prod", "P1v3", _tags("CC-2002", "prod", "web-team", "tracking-api"), instances=4, apps=1, autoscale=False, profile="steady"),
         _r(P, "rg-portal-prod", STG, "stlkportalassets", "Standard_LRS", _tags("CC-2002", "prod", "web-team", "customer-portal"), containers=[]),
@@ -100,7 +102,7 @@ def inventory() -> list[dict[str, Any]]:
         _r(N, "rg-sandbox-migration", DISK, "disk-migr-data-02", "P10", _tags(None, "sandbox", "unknown", "migration-test"), disk_state="Unattached", days_unattached=64, size_gb=128),
         _r(N, "rg-dispatch-dev", DISK, "disk-dev-scratch-01", "E10", _tags("CC-1001", "dev", "dispatch-team", "scratch"), disk_state="Unattached", days_unattached=2, size_gb=128),
         _r(N, "rg-sandbox-migration", PIP, "pip-migr-gw-01", "Standard", _tags(None, "sandbox", "unknown", "migration-test"), associated=False, days_unassociated=41),
-        _r(N, "rg-sandbox-migration", PIP, "pip-migr-gw-02", "Standard", _tags(None, "sandbox", "unknown", "migration-test"), associated=False, days_unassociated=41),
+        _r(N, "rg-sandbox-migration", PIP, "pip-migr-gw-02", "Standard", _tags(None, "sandbox", "unknown", "migration-test") | {"finops-exempt": "true"}, associated=False, days_unassociated=41),
         _r(N, "rg-dispatch-dev", PIP, "pip-dev-lb-01", "Standard", _tags("CC-1001", "dev", "dispatch-team", "dispatch-api"), associated=False, days_unassociated=1),
         _r(N, "rg-sandbox-migration", NIC, "nic-migr-vm-01", "n/a", _tags(None, "sandbox", "unknown", "migration-test"), attached=False),
         _r(N, "rg-sandbox-poc", PLAN, "asp-poc-empty", "P1v3", _tags("CC-2002", "sandbox", "web-team", "poc"), instances=1, apps=0, autoscale=False, profile="flat-zero"),
@@ -163,7 +165,7 @@ def web_traffic() -> dict[str, list[float]]:
         shape = max(0.0, math.sin(math.pi * (hour - 6) / 14)) if 6 <= hour <= 20 else 0.0
         portal.append(round(60 + 840 * shape * (1.0 if weekday else 0.35) + rng.gauss(0, 15), 1))
         # AKS: pod CPU cores demanded across the cluster
-        aks.append(round(max(2.0, 4 + 14 * shape * (1.0 if weekday else 0.5) + rng.gauss(0, 0.6)), 2))
+        aks.append(round(max(2.0, 4 + 12 * shape * (1.0 if weekday else 0.5) + rng.gauss(0, 0.6)), 2))
     return {"asp-portal-prod.rps": portal, "aks-dispatch-prod.pod_cores": aks}
 
 
@@ -179,7 +181,7 @@ def compute_usage(inv: list[dict[str, Any]]) -> list[float]:
     out = []
     for h in range(HOURS):
         hour, weekday = h % 24, (h // 24) % 7 < 5
-        aks_nodes = max(2, math.ceil(traffic[h % 168] / 3.2 / 0.75))
+        aks_nodes = max(2, math.ceil(traffic[h % 168] / (AKS_NODE_CORES * AKS_TARGET)))
         burst = 6 if weekday and 9 <= hour < 17 else 0
         units = 9 + aks_nodes * 2 + burst + (rng.random() < 0.02) * 2
         out.append(float(units))
@@ -222,7 +224,7 @@ def license_entitlements() -> dict[str, Any]:
 
 def network_endpoints() -> list[dict[str, Any]]:
     return [
-        {"name": "portal-static", "origin": "stlkportalassets", "egress_gb": 18000, "requests_10k": 52000, "cacheable": 0.9, "expected_hit_ratio": 0.85, "origin_plan": None},
+        {"name": "portal-static", "origin": "stlkportalassets", "egress_gb": 18000, "requests_10k": 9000, "cacheable": 0.9, "expected_hit_ratio": 0.85, "origin_plan": None},
         {"name": "tracking-api", "origin": "asp-tracking-prod", "egress_gb": 2200, "requests_10k": 31000, "cacheable": 0.7, "expected_hit_ratio": 0.7, "origin_plan": "asp-tracking-prod", "cache": "redis"},
     ]
 
@@ -239,7 +241,7 @@ def allocation_rules() -> dict[str, Any]:
             "rg-sandbox-poc": "CC-3003",
         },
         "shared": {"rg-platform-prod/log-lk-prod": "proportional"},
-        "budgets": {"CC-1001": 3400, "CC-2002": 2600, "CC-3003": 4500, "CC-4004": 1300, "CC-5005": 1100},
+        "budgets": {"CC-1001": 3400, "CC-2002": 3800, "CC-3003": 4500, "CC-4004": 600, "CC-5005": 700},
         "alert_thresholds": [0.5, 0.8, 1.0],
         "required_tags": ["cost-center", "owner", "env", "app"],
     }
@@ -315,8 +317,8 @@ def ai_use_cases() -> list[dict[str, Any]]:
 
 def ai_budgets() -> dict[str, Any]:
     return {
-        "tenant_monthly_usd": {"tenant-acme-retail": 60.0, "tenant-bluebird-pharma": 35.0, "tenant-cobalt-auto": 25.0, "internal": 20.0},
-        "agent_monthly_usd": {"eta-assistant": 45.0, "invoice-triage": 70.0, "dispatch-summarizer": 40.0},
+        "tenant_monthly_usd": {"tenant-acme-retail": 170.0, "tenant-bluebird-pharma": 130.0, "tenant-cobalt-auto": 80.0, "internal": 75.0},
+        "agent_monthly_usd": {"eta-assistant": 150.0, "invoice-triage": 200.0, "dispatch-summarizer": 100.0},
         "soft_alert": 0.8,
         "degrade_at": 1.0,
         "block_at": 1.2,

@@ -17,7 +17,7 @@
    "name": "portal-static",
    "origin": "stlkportalassets",
    "origin_plan": null,
-   "requests_10k": 52000
+   "requests_10k": 9000
   },
   {
    "cache": "redis",

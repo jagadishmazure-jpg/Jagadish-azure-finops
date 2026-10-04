@@ -89,7 +89,6 @@
   "properties": {
    "autoscaler": false,
    "node_count": 6,
-   "pod_cpu_per_node": 3.2,
    "profile": "aks-diurnal"
   },
   "resourceGroup": "rg-dispatch-prod",
@@ -186,7 +185,7 @@
    "autoscale": false,
    "instances": 6,
    "profile": "web-weekly",
-   "rps_per_instance": 180
+   "rps_per_instance": 250
   },
   "resourceGroup": "rg-portal-prod",
   "sku": "P1v3",
@@ -583,6 +582,7 @@
   "tags": {
    "app": "migration-test",
    "env": "sandbox",
+   "finops-exempt": "true",
    "owner": "unknown"
   },
   "type": "Microsoft.Network/publicIPAddresses"

@@ -11,8 +11,16 @@ from typing import Any
 from finops import HOURS_PER_MONTH, SECONDS_PER_MONTH
 from finops.pricing import PriceBook, default_book, vm_key
 
+VM_SHAPES = {  # size: (vCPU, GiB)
+    "D2s_v5": (2, 8), "D4s_v5": (4, 16), "D8s_v5": (8, 32), "E4s_v5": (4, 32),
+}
 WS_SHAPES = {"WS1": (1, 3.5), "WS2": (2, 7.0), "WS3": (4, 14.0)}
 EP_SHAPES = {"EP1": (1, 3.5), "EP2": (2, 7.0), "EP3": (4, 14.0)}
+
+
+def sql_license_key(edition: str, vcpu: int) -> str:
+    """SQL Server pay-as-you-go license meter for a VM of ``vcpu`` cores (1-4 share one meter)."""
+    return f"license.sql_{edition}.{4 if vcpu <= 4 else 8}vcpu_hour"
 
 
 def logic_apps_standard_hourly(sku: str, book: PriceBook | None = None) -> float:
@@ -48,7 +56,10 @@ def monthly_cost(r: dict[str, Any], book: PriceBook | None = None) -> float:
     if t.endswith("virtualMachines"):
         if p.get("power_state") == "deallocated":
             return 0.0  # deallocated VMs bill disks only (disks are not modelled per VM)
-        return book.monthly(vm_key(sku, p.get("os", "linux")))
+        cost = book.monthly(vm_key(sku, p.get("os", "linux")))
+        if p.get("sql_edition") and p.get("sql_license") != "ahb":
+            cost += book.monthly(sql_license_key(p["sql_edition"], VM_SHAPES[sku][0]))
+        return cost
     if t.endswith("managedClusters"):
         return book.monthly(vm_key(sku)) * p["node_count"]
     if t.endswith("serverfarms"):
