@@ -1,0 +1,9 @@
+// Pattern 4: scale sets and Batch-style pools still on regular priority. Candidates for Spot only if
+// the workload is interruptible; the tag 'interruptible' records the owner's answer.
+resources
+| where type =~ 'microsoft.compute/virtualmachinescalesets'
+| extend priority = tostring(properties.virtualMachineProfile.priority)
+| where priority !~ 'Spot'
+| extend sku = tostring(sku.name), capacity = toint(sku.capacity), interruptible = tostring(tags.interruptible)
+| project id, name, resourceGroup, subscriptionId, sku, capacity, priority, interruptible
+| order by capacity desc

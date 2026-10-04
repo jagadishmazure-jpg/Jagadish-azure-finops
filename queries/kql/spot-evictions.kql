@@ -1,0 +1,8 @@
+// Pattern 4: evictions per scale set per day, from the activity log (Spot eviction is logged as a
+// Preempt / deallocate operation by the platform). Compare with the eviction-rate assumption.
+AzureActivity
+| where TimeGenerated > ago(30d)
+| where OperationNameValue has 'virtualMachineScaleSets' and ActivitySubstatusValue has 'Preempt'
+     or Properties has 'SpotVmEviction'
+| summarize evictions = count() by scaleSet = tostring(split(_ResourceId, '/')[8]), day = bin(TimeGenerated, 1d)
+| order by day asc

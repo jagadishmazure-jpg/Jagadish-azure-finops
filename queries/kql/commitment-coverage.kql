@@ -1,0 +1,10 @@
+// Pattern 3: hourly commitment coverage for the D-series fleet from the FOCUS export (FocusCost_CL).
+// Covered = rows with a CommitmentDiscountId; the uncovered on-demand floor is the next purchase.
+FocusCost_CL
+| where ChargePeriodStart > ago(30d)
+| where ServiceName == 'Virtual Machines' and x_SkuMeterName has_any ('D2s v5', 'D4s v5', 'D8s v5')
+| extend covered = isnotempty(CommitmentDiscountId)
+| summarize onDemandHours = sumif(ConsumedQuantity, not(covered)), coveredHours = sumif(ConsumedQuantity, covered),
+            onDemandCost = sumif(EffectiveCost, not(covered)) by hour = bin(ChargePeriodStart, 1h)
+| extend coveragePct = round(100.0 * coveredHours / (coveredHours + onDemandHours), 1)
+| summarize p10OnDemandHours = percentile(onDemandHours, 10), avgCoverage = avg(coveragePct), onDemandCost = sum(onDemandCost)

@@ -1,0 +1,7 @@
+// Pattern 6: Windows and SQL license meters still billed at pay-as-you-go, from the FOCUS export.
+// (x_ columns are the Azure extensions in the Cost Management FOCUS export.) Any cost here is a license charge that Azure Hybrid Benefit could remove.
+FocusCost_CL
+| where ChargePeriodStart > ago(30d)
+| where x_SkuMeterName has 'Windows' or x_SkuMeterSubcategory has 'SQL Server'
+| summarize licenseCost = sum(EffectiveCost) by ResourceName, SkuId
+| order by licenseCost desc

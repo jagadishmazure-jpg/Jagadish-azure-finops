@@ -1,0 +1,8 @@
+// Pattern 7: executions and average duration per Function App (Application Insights), the two
+// inputs for the Flex Consumption estimate (GB-seconds = executions x duration x memory).
+AppRequests
+| where TimeGenerated > ago(30d)
+| where AppRoleName startswith 'fn-'
+| summarize executions = count(), avgDurationS = avg(DurationMs) / 1000.0, p95DurationS = percentile(DurationMs, 95) / 1000.0
+    by AppRoleName
+| order by executions desc
