@@ -56,7 +56,9 @@ def folders():
 
 
 # .github has no README on purpose: GitHub would show .github/README.md instead of the root README.
-@pytest.mark.parametrize("folder", [f for f in folders() if f != ROOT / ".github"], ids=lambda p: str(p.relative_to(ROOT)) or ".")
+@pytest.mark.parametrize(
+    "folder", [f for f in folders() if f != ROOT / ".github"], ids=lambda p: str(p.relative_to(ROOT)) or "."
+)
 def test_every_folder_has_a_readme_with_a_file_table(folder):
     readme = folder / "README.md"
     assert readme.exists(), f"{folder} has no README.md"
