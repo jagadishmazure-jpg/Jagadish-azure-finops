@@ -1,0 +1,33 @@
+{
+ "cross_region": [
+  {
+   "changed_fraction": 0.12,
+   "from": "eastus2",
+   "gb_per_month": 42000,
+   "name": "nightly-lake-copy",
+   "purpose": "DR copy of the data lake (full copy each night)",
+   "to": "westus2"
+  }
+ ],
+ "endpoints": [
+  {
+   "cacheable": 0.9,
+   "egress_gb": 18000,
+   "expected_hit_ratio": 0.85,
+   "name": "portal-static",
+   "origin": "stlkportalassets",
+   "origin_plan": null,
+   "requests_10k": 52000
+  },
+  {
+   "cache": "redis",
+   "cacheable": 0.7,
+   "egress_gb": 2200,
+   "expected_hit_ratio": 0.7,
+   "name": "tracking-api",
+   "origin": "asp-tracking-prod",
+   "origin_plan": "asp-tracking-prod",
+   "requests_10k": 31000
+  }
+ ]
+}

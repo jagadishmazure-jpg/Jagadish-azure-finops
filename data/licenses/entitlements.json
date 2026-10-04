@@ -1,0 +1,6 @@
+{
+ "notes": "Synthetic entitlement register. Real assessments read the license agreement and Software Assurance records.",
+ "sql_enterprise_cores_with_sa": 0,
+ "sql_standard_cores_with_sa": 4,
+ "windows_server_datacenter_cores_with_sa": 16
+}

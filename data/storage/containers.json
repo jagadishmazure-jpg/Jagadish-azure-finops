@@ -1,0 +1,94 @@
+[
+ {
+  "account": "stlkdatalake",
+  "buckets": [
+   {
+    "gb": 4200,
+    "min_age": 0,
+    "read_gb": 9000
+   },
+   {
+    "gb": 11800,
+    "min_age": 30,
+    "read_gb": 600
+   },
+   {
+    "gb": 26500,
+    "min_age": 90,
+    "read_gb": 40
+   },
+   {
+    "gb": 61000,
+    "min_age": 180,
+    "read_gb": 5
+   }
+  ],
+  "container": "raw-telemetry",
+  "legal_hold": false,
+  "max_rehydrate_hours": 48
+ },
+ {
+  "account": "stlkdatalake",
+  "buckets": [
+   {
+    "gb": 900,
+    "min_age": 0,
+    "read_gb": 2600
+   },
+   {
+    "gb": 3100,
+    "min_age": 30,
+    "read_gb": 310
+   },
+   {
+    "gb": 7400,
+    "min_age": 90,
+    "read_gb": 120
+   },
+   {
+    "gb": 15800,
+    "min_age": 180,
+    "read_gb": 60
+   }
+  ],
+  "container": "shipment-docs",
+  "legal_hold": false,
+  "max_rehydrate_hours": 1
+ },
+ {
+  "account": "stlkdatalake",
+  "buckets": [
+   {
+    "gb": 150,
+    "min_age": 0,
+    "read_gb": 2
+   },
+   {
+    "gb": 9800,
+    "min_age": 180,
+    "read_gb": 0
+   }
+  ],
+  "container": "audit-archive",
+  "legal_hold": true,
+  "max_rehydrate_hours": 48
+ },
+ {
+  "account": "stlkdatalake",
+  "buckets": [
+   {
+    "gb": 2400,
+    "min_age": 0,
+    "read_gb": 48000
+   },
+   {
+    "gb": 600,
+    "min_age": 30,
+    "read_gb": 900
+   }
+  ],
+  "container": "ml-features",
+  "legal_hold": false,
+  "max_rehydrate_hours": 1
+ }
+]

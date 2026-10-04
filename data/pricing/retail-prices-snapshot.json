@@ -208,6 +208,23 @@
    }
   },
   {
+   "key": "bandwidth.inter_region_gb",
+   "serviceName": "Bandwidth",
+   "productName": "Rtn Preference: MGN",
+   "skuName": "Standard",
+   "meterName": "Standard Inter-Region Data Transfer",
+   "armRegionName": "eastus2",
+   "type": "Consumption",
+   "reservationTerm": "",
+   "unitOfMeasure": "1 GB",
+   "tiers": [
+    {
+     "from_units": 0.0,
+     "price": 0.02
+    }
+   ]
+  },
+  {
    "key": "bandwidth.internet_egress_gb",
    "serviceName": "Bandwidth",
    "productName": "Rtn Preference: MGN",

@@ -125,6 +125,7 @@ SPECS: list[tuple] = [
     ("redis.standard.C1", f"{R} and serviceName eq 'Redis Cache' and productName eq 'Azure Redis Cache Standard'", {"meterName": "C1 Cache", "type": "Consumption"}, "single"),
     # Data transfer
     ("bandwidth.internet_egress_gb", f"{R} and serviceName eq 'Bandwidth' and productName eq 'Rtn Preference: MGN'", {"meterName": "Standard Data Transfer Out", "type": "Consumption"}, "tiers"),
+    ("bandwidth.inter_region_gb", f"{R} and serviceName eq 'Bandwidth' and productName eq 'Rtn Preference: MGN'", {"meterName": "Standard Inter-Region Data Transfer", "type": "Consumption"}, "single"),
     ("frontdoor.standard.base_month", "serviceName eq 'Azure Front Door Service' and productName eq 'Azure Front Door' and armRegionName eq 'Zone 1'", {"meterName": "Standard Base Fees", "type": "Consumption"}, "single"),
     ("frontdoor.standard.egress_gb", "serviceName eq 'Azure Front Door Service' and productName eq 'Azure Front Door' and armRegionName eq 'Zone 1'", {"meterName": "Standard Data Transfer Out", "type": "Consumption"}, "tiers"),
     ("frontdoor.standard.requests_10k", "serviceName eq 'Azure Front Door Service' and productName eq 'Azure Front Door' and armRegionName eq 'Zone 1'", {"meterName": "Standard Requests", "type": "Consumption"}, "tiers"),

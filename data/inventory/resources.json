@@ -1,0 +1,686 @@
+[
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-dispatch-prod/providers/Microsoft.Compute/virtualMachines/vm-dispatch-api-01",
+  "location": "eastus2",
+  "name": "vm-dispatch-api-01",
+  "properties": {
+   "os": "linux",
+   "power_state": "running",
+   "profile": "low"
+  },
+  "resourceGroup": "rg-dispatch-prod",
+  "sku": "D8s_v5",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "dispatch-api",
+   "cost-center": "CC-1001",
+   "env": "prod",
+   "owner": "dispatch-team"
+  },
+  "type": "Microsoft.Compute/virtualMachines"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-dispatch-prod/providers/Microsoft.Compute/virtualMachines/vm-dispatch-api-02",
+  "location": "eastus2",
+  "name": "vm-dispatch-api-02",
+  "properties": {
+   "os": "linux",
+   "power_state": "running",
+   "profile": "low"
+  },
+  "resourceGroup": "rg-dispatch-prod",
+  "sku": "D8s_v5",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "dispatch-api",
+   "cost-center": "CC-1001",
+   "env": "prod",
+   "owner": "dispatch-team"
+  },
+  "type": "Microsoft.Compute/virtualMachines"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-dispatch-prod/providers/Microsoft.Compute/virtualMachines/vm-dispatch-db-01",
+  "location": "eastus2",
+  "name": "vm-dispatch-db-01",
+  "properties": {
+   "license_type": null,
+   "os": "windows",
+   "power_state": "running",
+   "profile": "memory-bound",
+   "sql_edition": "standard"
+  },
+  "resourceGroup": "rg-dispatch-prod",
+  "sku": "E4s_v5",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "dispatch-db",
+   "cost-center": "CC-1001",
+   "env": "prod",
+   "owner": "dispatch-team"
+  },
+  "type": "Microsoft.Compute/virtualMachines"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-dispatch-prod/providers/Microsoft.Compute/virtualMachines/vm-dispatch-legacy-01",
+  "location": "eastus2",
+  "name": "vm-dispatch-legacy-01",
+  "properties": {
+   "license_type": null,
+   "os": "windows",
+   "power_state": "running",
+   "profile": "idle-ish"
+  },
+  "resourceGroup": "rg-dispatch-prod",
+  "sku": "D4s_v5",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "legacy-scheduler",
+   "cost-center": "CC-1001",
+   "env": "prod",
+   "owner": "dispatch-team"
+  },
+  "type": "Microsoft.Compute/virtualMachines"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-dispatch-prod/providers/Microsoft.ContainerService/managedClusters/aks-dispatch-prod",
+  "location": "eastus2",
+  "name": "aks-dispatch-prod",
+  "properties": {
+   "autoscaler": false,
+   "node_count": 6,
+   "pod_cpu_per_node": 3.2,
+   "profile": "aks-diurnal"
+  },
+  "resourceGroup": "rg-dispatch-prod",
+  "sku": "D4s_v5",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "dispatch-workers",
+   "cost-center": "CC-1001",
+   "env": "prod",
+   "owner": "dispatch-team"
+  },
+  "type": "Microsoft.ContainerService/managedClusters"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-integration-prod/providers/Microsoft.Web/sites/la-invoice-intake",
+  "location": "eastus2",
+  "name": "la-invoice-intake",
+  "properties": {
+   "actions_per_run": 12,
+   "kind": "workflowapp",
+   "monthly_runs": 2000,
+   "needs_vnet": false,
+   "plan_gib": 3.5,
+   "plan_vcpu": 1,
+   "workflows": 3
+  },
+  "resourceGroup": "rg-integration-prod",
+  "sku": "WS1",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "invoice-intake",
+   "cost-center": "CC-1001",
+   "env": "prod",
+   "owner": "integration-team"
+  },
+  "type": "Microsoft.Web/sites"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-integration-prod/providers/Microsoft.Web/sites/fn-label-print",
+  "location": "eastus2",
+  "name": "fn-label-print",
+  "properties": {
+   "avg_duration_s": 0.4,
+   "kind": "functionapp",
+   "max_cold_start_s": 10,
+   "memory_gb": 0.5,
+   "monthly_executions": 120000,
+   "needs_vnet": false,
+   "plan_gib": 3.5,
+   "plan_vcpu": 1
+  },
+  "resourceGroup": "rg-integration-prod",
+  "sku": "EP1",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "label-print",
+   "cost-center": "CC-1001",
+   "env": "prod",
+   "owner": "integration-team"
+  },
+  "type": "Microsoft.Web/sites"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-integration-prod/providers/Microsoft.Web/sites/fn-telemetry-ingest",
+  "location": "eastus2",
+  "name": "fn-telemetry-ingest",
+  "properties": {
+   "avg_duration_s": 0.25,
+   "kind": "functionapp",
+   "max_cold_start_s": 10,
+   "memory_gb": 0.5,
+   "monthly_executions": 900000000,
+   "needs_vnet": false,
+   "plan_gib": 3.5,
+   "plan_vcpu": 1
+  },
+  "resourceGroup": "rg-integration-prod",
+  "sku": "EP1",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "telemetry-ingest",
+   "cost-center": "CC-1001",
+   "env": "prod",
+   "owner": "integration-team"
+  },
+  "type": "Microsoft.Web/sites"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-portal-prod/providers/Microsoft.Web/serverfarms/asp-portal-prod",
+  "location": "eastus2",
+  "name": "asp-portal-prod",
+  "properties": {
+   "apps": 2,
+   "autoscale": false,
+   "instances": 6,
+   "profile": "web-weekly",
+   "rps_per_instance": 180
+  },
+  "resourceGroup": "rg-portal-prod",
+  "sku": "P1v3",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "customer-portal",
+   "cost-center": "CC-2002",
+   "env": "prod",
+   "owner": "web-team"
+  },
+  "type": "Microsoft.Web/serverfarms"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-portal-prod/providers/Microsoft.Web/serverfarms/asp-partner-api",
+  "location": "eastus2",
+  "name": "asp-partner-api",
+  "properties": {
+   "apps": 1,
+   "autoscale": false,
+   "instances": 2,
+   "profile": "low"
+  },
+  "resourceGroup": "rg-portal-prod",
+  "sku": "P2v3",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "partner-api",
+   "cost-center": "CC-2002",
+   "env": "prod",
+   "owner": "web-team"
+  },
+  "type": "Microsoft.Web/serverfarms"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-portal-prod/providers/Microsoft.Web/serverfarms/asp-tracking-prod",
+  "location": "eastus2",
+  "name": "asp-tracking-prod",
+  "properties": {
+   "apps": 1,
+   "autoscale": false,
+   "instances": 4,
+   "profile": "steady"
+  },
+  "resourceGroup": "rg-portal-prod",
+  "sku": "P1v3",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "tracking-api",
+   "cost-center": "CC-2002",
+   "env": "prod",
+   "owner": "web-team"
+  },
+  "type": "Microsoft.Web/serverfarms"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-portal-prod/providers/Microsoft.Storage/storageAccounts/stlkportalassets",
+  "location": "eastus2",
+  "name": "stlkportalassets",
+  "properties": {
+   "containers": []
+  },
+  "resourceGroup": "rg-portal-prod",
+  "sku": "Standard_LRS",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "customer-portal",
+   "cost-center": "CC-2002",
+   "env": "prod",
+   "owner": "web-team"
+  },
+  "type": "Microsoft.Storage/storageAccounts"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-data-prod/providers/Microsoft.Compute/virtualMachines/vm-etl-01",
+  "location": "eastus2",
+  "name": "vm-etl-01",
+  "properties": {
+   "os": "linux",
+   "power_state": "running",
+   "profile": "memory-bound"
+  },
+  "resourceGroup": "rg-data-prod",
+  "sku": "E4s_v5",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "etl",
+   "cost-center": "CC-3003",
+   "env": "prod",
+   "owner": "data-team"
+  },
+  "type": "Microsoft.Compute/virtualMachines"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-data-prod/providers/Microsoft.Compute/virtualMachines/vm-report-01",
+  "location": "eastus2",
+  "name": "vm-report-01",
+  "properties": {
+   "os": "linux",
+   "power_state": "running",
+   "profile": "idle-ish"
+  },
+  "resourceGroup": "rg-data-prod",
+  "sku": "D4s_v5",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "reporting",
+   "cost-center": "CC-3003",
+   "env": "prod",
+   "owner": "data-team"
+  },
+  "type": "Microsoft.Compute/virtualMachines"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-data-prod/providers/Microsoft.Storage/storageAccounts/stlkdatalake",
+  "location": "eastus2",
+  "name": "stlkdatalake",
+  "properties": {
+   "containers": [
+    "raw-telemetry",
+    "shipment-docs",
+    "audit-archive",
+    "ml-features"
+   ]
+  },
+  "resourceGroup": "rg-data-prod",
+  "sku": "Standard_LRS",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "data-lake",
+   "cost-center": "CC-3003",
+   "env": "prod",
+   "owner": "data-team"
+  },
+  "type": "Microsoft.Storage/storageAccounts"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-data-prod/providers/Microsoft.Batch/batchAccounts/batch-lk-prod",
+  "location": "eastus2",
+  "name": "batch-lk-prod",
+  "properties": {
+   "pools": [
+    "route-optimizer",
+    "invoice-render",
+    "month-end-close",
+    "eta-model-train"
+   ]
+  },
+  "resourceGroup": "rg-data-prod",
+  "sku": "D8s_v5",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "batch",
+   "cost-center": "CC-3003",
+   "env": "prod",
+   "owner": "data-team"
+  },
+  "type": "Microsoft.Batch/batchAccounts"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-platform-prod/providers/Microsoft.Compute/virtualMachines/vm-build-01",
+  "location": "eastus2",
+  "name": "vm-build-01",
+  "properties": {
+   "os": "linux",
+   "power_state": "running",
+   "profile": "busy"
+  },
+  "resourceGroup": "rg-platform-prod",
+  "sku": "D4s_v5",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "build-agent",
+   "cost-center": "CC-4004",
+   "env": "prod",
+   "owner": "platform-team"
+  },
+  "type": "Microsoft.Compute/virtualMachines"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-platform-prod/providers/Microsoft.Compute/virtualMachines/vm-jump-01",
+  "location": "eastus2",
+  "name": "vm-jump-01",
+  "properties": {
+   "license_type": null,
+   "os": "windows",
+   "power_state": "running",
+   "profile": "moderate"
+  },
+  "resourceGroup": "rg-platform-prod",
+  "sku": "D2s_v5",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "jumpbox",
+   "cost-center": "CC-4004",
+   "env": "prod",
+   "owner": "platform-team"
+  },
+  "type": "Microsoft.Compute/virtualMachines"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-platform-prod/providers/Microsoft.OperationalInsights/workspaces/log-lk-prod",
+  "location": "eastus2",
+  "name": "log-lk-prod",
+  "properties": {
+   "ingest_gb_per_day": 12.0,
+   "shared": true
+  },
+  "resourceGroup": "rg-platform-prod",
+  "sku": "PerGB2018",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "observability",
+   "cost-center": "CC-4004",
+   "env": "prod",
+   "owner": "platform-team"
+  },
+  "type": "Microsoft.OperationalInsights/workspaces"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-ai-prod/providers/Microsoft.CognitiveServices/accounts/aoai-lk-prod",
+  "location": "eastus2",
+  "name": "aoai-lk-prod",
+  "properties": {
+   "deployments": [
+    "gpt-4o",
+    "gpt-4o-mini"
+   ]
+  },
+  "resourceGroup": "rg-ai-prod",
+  "sku": "S0",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "assistants",
+   "cost-center": "CC-5005",
+   "env": "prod",
+   "owner": "ai-team"
+  },
+  "type": "Microsoft.CognitiveServices/accounts"
+ },
+ {
+  "id": "/subscriptions/lk-prod/resourceGroups/rg-ai-prod/providers/Microsoft.App/containerApps/ca-eta-assistant",
+  "location": "eastus2",
+  "name": "ca-eta-assistant",
+  "properties": {
+   "active_fraction": 0.62,
+   "gib": 1.0,
+   "min_replicas": 1,
+   "monthly_requests": 410000,
+   "vcpu": 0.5
+  },
+  "resourceGroup": "rg-ai-prod",
+  "sku": "consumption",
+  "subscription": "lk-prod",
+  "tags": {
+   "app": "eta-assistant",
+   "cost-center": "CC-5005",
+   "env": "prod",
+   "owner": "ai-team"
+  },
+  "type": "Microsoft.App/containerApps"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-dispatch-dev/providers/Microsoft.App/containerApps/ca-dispatch-dev-api",
+  "location": "eastus2",
+  "name": "ca-dispatch-dev-api",
+  "properties": {
+   "active_fraction": 0.18,
+   "gib": 2.0,
+   "min_replicas": 2,
+   "monthly_requests": 52000,
+   "vcpu": 1.0
+  },
+  "resourceGroup": "rg-dispatch-dev",
+  "sku": "consumption",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "dispatch-api",
+   "cost-center": "CC-1001",
+   "env": "dev",
+   "owner": "dispatch-team"
+  },
+  "type": "Microsoft.App/containerApps"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-dispatch-dev/providers/Microsoft.App/containerApps/ca-dispatch-dev-worker",
+  "location": "eastus2",
+  "name": "ca-dispatch-dev-worker",
+  "properties": {
+   "active_fraction": 0.1,
+   "gib": 2.0,
+   "min_replicas": 1,
+   "monthly_requests": 0,
+   "queue_driven": true,
+   "vcpu": 1.0
+  },
+  "resourceGroup": "rg-dispatch-dev",
+  "sku": "consumption",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "dispatch-worker",
+   "cost-center": "CC-1001",
+   "env": "dev",
+   "owner": "dispatch-team"
+  },
+  "type": "Microsoft.App/containerApps"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-sandbox-migration/providers/Microsoft.Compute/disks/disk-migr-data-01",
+  "location": "eastus2",
+  "name": "disk-migr-data-01",
+  "properties": {
+   "days_unattached": 64,
+   "disk_state": "Unattached",
+   "size_gb": 1024
+  },
+  "resourceGroup": "rg-sandbox-migration",
+  "sku": "P30",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "migration-test",
+   "env": "sandbox",
+   "owner": "unknown"
+  },
+  "type": "Microsoft.Compute/disks"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-sandbox-migration/providers/Microsoft.Compute/disks/disk-migr-data-02",
+  "location": "eastus2",
+  "name": "disk-migr-data-02",
+  "properties": {
+   "days_unattached": 64,
+   "disk_state": "Unattached",
+   "size_gb": 128
+  },
+  "resourceGroup": "rg-sandbox-migration",
+  "sku": "P10",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "migration-test",
+   "env": "sandbox",
+   "owner": "unknown"
+  },
+  "type": "Microsoft.Compute/disks"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-dispatch-dev/providers/Microsoft.Compute/disks/disk-dev-scratch-01",
+  "location": "eastus2",
+  "name": "disk-dev-scratch-01",
+  "properties": {
+   "days_unattached": 2,
+   "disk_state": "Unattached",
+   "size_gb": 128
+  },
+  "resourceGroup": "rg-dispatch-dev",
+  "sku": "E10",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "scratch",
+   "cost-center": "CC-1001",
+   "env": "dev",
+   "owner": "dispatch-team"
+  },
+  "type": "Microsoft.Compute/disks"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-sandbox-migration/providers/Microsoft.Network/publicIPAddresses/pip-migr-gw-01",
+  "location": "eastus2",
+  "name": "pip-migr-gw-01",
+  "properties": {
+   "associated": false,
+   "days_unassociated": 41
+  },
+  "resourceGroup": "rg-sandbox-migration",
+  "sku": "Standard",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "migration-test",
+   "env": "sandbox",
+   "owner": "unknown"
+  },
+  "type": "Microsoft.Network/publicIPAddresses"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-sandbox-migration/providers/Microsoft.Network/publicIPAddresses/pip-migr-gw-02",
+  "location": "eastus2",
+  "name": "pip-migr-gw-02",
+  "properties": {
+   "associated": false,
+   "days_unassociated": 41
+  },
+  "resourceGroup": "rg-sandbox-migration",
+  "sku": "Standard",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "migration-test",
+   "env": "sandbox",
+   "owner": "unknown"
+  },
+  "type": "Microsoft.Network/publicIPAddresses"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-dispatch-dev/providers/Microsoft.Network/publicIPAddresses/pip-dev-lb-01",
+  "location": "eastus2",
+  "name": "pip-dev-lb-01",
+  "properties": {
+   "associated": false,
+   "days_unassociated": 1
+  },
+  "resourceGroup": "rg-dispatch-dev",
+  "sku": "Standard",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "dispatch-api",
+   "cost-center": "CC-1001",
+   "env": "dev",
+   "owner": "dispatch-team"
+  },
+  "type": "Microsoft.Network/publicIPAddresses"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-sandbox-migration/providers/Microsoft.Network/networkInterfaces/nic-migr-vm-01",
+  "location": "eastus2",
+  "name": "nic-migr-vm-01",
+  "properties": {
+   "attached": false
+  },
+  "resourceGroup": "rg-sandbox-migration",
+  "sku": "n/a",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "migration-test",
+   "env": "sandbox",
+   "owner": "unknown"
+  },
+  "type": "Microsoft.Network/networkInterfaces"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-sandbox-poc/providers/Microsoft.Web/serverfarms/asp-poc-empty",
+  "location": "eastus2",
+  "name": "asp-poc-empty",
+  "properties": {
+   "apps": 0,
+   "autoscale": false,
+   "instances": 1,
+   "profile": "flat-zero"
+  },
+  "resourceGroup": "rg-sandbox-poc",
+  "sku": "P1v3",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "poc",
+   "cost-center": "CC-2002",
+   "env": "sandbox",
+   "owner": "web-team"
+  },
+  "type": "Microsoft.Web/serverfarms"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-sandbox-poc/providers/Microsoft.Compute/virtualMachines/vm-poc-gpu-replacement",
+  "location": "eastus2",
+  "name": "vm-poc-gpu-replacement",
+  "properties": {
+   "os": "linux",
+   "power_state": "stopped",
+   "profile": "flat-zero"
+  },
+  "resourceGroup": "rg-sandbox-poc",
+  "sku": "D4s_v5",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "poc",
+   "cost-center": "CC-3003",
+   "env": "sandbox",
+   "owner": "data-team"
+  },
+  "type": "Microsoft.Compute/virtualMachines"
+ },
+ {
+  "id": "/subscriptions/lk-nonprod/resourceGroups/rg-sandbox-poc/providers/Microsoft.Compute/virtualMachines/vm-poc-old-ui",
+  "location": "eastus2",
+  "name": "vm-poc-old-ui",
+  "properties": {
+   "os": "linux",
+   "power_state": "deallocated",
+   "profile": "flat-zero"
+  },
+  "resourceGroup": "rg-sandbox-poc",
+  "sku": "D2s_v5",
+  "subscription": "lk-nonprod",
+  "tags": {
+   "app": "poc",
+   "env": "sandbox",
+   "owner": "unknown"
+  },
+  "type": "Microsoft.Compute/virtualMachines"
+ }
+]

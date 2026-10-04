@@ -1,0 +1,42 @@
+[
+ {
+  "checkpoint_minutes": 15,
+  "deadline_hours": 6.0,
+  "hours_per_run": 3.0,
+  "interruptible": true,
+  "name": "route-optimizer",
+  "nodes": 10,
+  "runs_per_month": 30,
+  "size": "D8s_v5"
+ },
+ {
+  "checkpoint_minutes": 10,
+  "deadline_hours": 4.0,
+  "hours_per_run": 2.0,
+  "interruptible": true,
+  "name": "invoice-render",
+  "nodes": 4,
+  "runs_per_month": 30,
+  "size": "D4s_v5"
+ },
+ {
+  "checkpoint_minutes": 30,
+  "deadline_hours": 12.0,
+  "hours_per_run": 5.0,
+  "interruptible": true,
+  "name": "eta-model-train",
+  "nodes": 6,
+  "runs_per_month": 8,
+  "size": "E4s_v5"
+ },
+ {
+  "checkpoint_minutes": 0,
+  "deadline_hours": 7.0,
+  "hours_per_run": 6.0,
+  "interruptible": false,
+  "name": "month-end-close",
+  "nodes": 2,
+  "runs_per_month": 1,
+  "size": "D8s_v5"
+ }
+]

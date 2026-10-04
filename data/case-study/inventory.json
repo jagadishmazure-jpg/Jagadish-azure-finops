@@ -1,0 +1,66 @@
+[
+ {
+  "id": "/subscriptions/cs-practice/resourceGroups/rg-practice-integration/providers/Microsoft.Web/serverfarms/asp-practice-ws1",
+  "location": "eastus2",
+  "name": "asp-practice-ws1",
+  "properties": {
+   "apps": 1,
+   "kind": "workflowapp-plan",
+   "last_run_days_ago": 47,
+   "plan_gib": 3.5,
+   "plan_vcpu": 1,
+   "workflow_runs_30d": 0
+  },
+  "resourceGroup": "rg-practice-integration",
+  "sku": "WS1",
+  "subscription": "cs-practice",
+  "tags": {
+   "app": "logic-apps-trial",
+   "env": "practice",
+   "owner": "unknown"
+  },
+  "type": "Microsoft.Web/serverfarms"
+ },
+ {
+  "id": "/subscriptions/cs-practice/resourceGroups/rg-practice-integration/providers/Microsoft.Web/sites/la-practice-orders",
+  "location": "eastus2",
+  "name": "la-practice-orders",
+  "properties": {
+   "actions_per_run": 6,
+   "kind": "workflowapp",
+   "monthly_runs": 0,
+   "plan": "asp-practice-ws1",
+   "workflows": 2
+  },
+  "resourceGroup": "rg-practice-integration",
+  "sku": "WS1",
+  "subscription": "cs-practice",
+  "tags": {
+   "app": "logic-apps-trial",
+   "env": "practice",
+   "owner": "unknown"
+  },
+  "type": "Microsoft.Web/sites"
+ },
+ {
+  "id": "/subscriptions/cs-practice/resourceGroups/rg-practice-agent/providers/Microsoft.App/containerApps/ca-practice-agent",
+  "location": "eastus2",
+  "name": "ca-practice-agent",
+  "properties": {
+   "active_fraction": 0.0,
+   "gib": 1.0,
+   "min_replicas": 1,
+   "monthly_requests": 0,
+   "vcpu": 0.5
+  },
+  "resourceGroup": "rg-practice-agent",
+  "sku": "consumption",
+  "subscription": "cs-practice",
+  "tags": {
+   "app": "agent-trial",
+   "env": "practice",
+   "owner": "unknown"
+  },
+  "type": "Microsoft.App/containerApps"
+ }
+]

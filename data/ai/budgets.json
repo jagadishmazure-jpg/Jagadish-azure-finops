@@ -1,0 +1,19 @@
+{
+ "agent_monthly_usd": {
+  "dispatch-summarizer": 40.0,
+  "eta-assistant": 45.0,
+  "invoice-triage": 70.0
+ },
+ "block_at": 1.2,
+ "critical_agents": [
+  "invoice-triage"
+ ],
+ "degrade_at": 1.0,
+ "soft_alert": 0.8,
+ "tenant_monthly_usd": {
+  "internal": 20.0,
+  "tenant-acme-retail": 60.0,
+  "tenant-bluebird-pharma": 35.0,
+  "tenant-cobalt-auto": 25.0
+ }
+}
