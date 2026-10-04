@@ -1,0 +1,13 @@
+// Pattern 6: Windows VMs not using Azure Hybrid Benefit, and SQL VMs on pay-as-you-go licensing.
+resources
+| where type =~ 'microsoft.compute/virtualmachines'
+| where properties.storageProfile.osDisk.osType =~ 'Windows'
+| extend licenseType = tostring(properties.licenseType), size = tostring(properties.hardwareProfile.vmSize)
+| where licenseType !in~ ('Windows_Server', 'Windows_Client')
+| project id, name, resourceGroup, subscriptionId, size, licenseType
+| union (
+    resources
+    | where type =~ 'microsoft.sqlvirtualmachine/sqlvirtualmachines'
+    | where properties.sqlServerLicenseType !~ 'AHUB'
+    | project id, name, resourceGroup, subscriptionId, size = '', licenseType = tostring(properties.sqlServerLicenseType)
+)

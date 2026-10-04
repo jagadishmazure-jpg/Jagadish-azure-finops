@@ -1,0 +1,10 @@
+// Pattern 8: managed disks attached to nothing, oldest first. Azure Resource Graph (read-only).
+resources
+| where type =~ 'microsoft.compute/disks'
+| where properties.diskState =~ 'Unattached'
+| extend sku = tostring(sku.name), sizeGb = toint(properties.diskSizeGB)
+| extend unattachedSince = todatetime(properties.LastOwnershipUpdateTime)
+| extend daysUnattached = datetime_diff('day', now(), unattachedSince)
+| where tostring(tags['finops-exempt']) != 'true'
+| project id, name, resourceGroup, subscriptionId, sku, sizeGb, daysUnattached, owner = tostring(tags.owner)
+| order by daysUnattached desc

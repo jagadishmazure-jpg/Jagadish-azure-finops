@@ -1,0 +1,9 @@
+// Pattern 1: p95 CPU and memory per VM over 30 days (VM Insights / Azure Monitor Agent).
+let window = 30d;
+InsightsMetrics
+| where TimeGenerated > ago(window)
+| where (Namespace == 'Processor' and Name == 'UtilizationPercentage') or (Namespace == 'Memory' and Name == 'AvailableMB')
+| extend totalMb = todouble(parse_json(Tags)['vm.azm.ms/memorySizeMB'])
+| extend value = iff(Name == 'AvailableMB', 100.0 * (1 - Val / totalMb), Val)
+| summarize p95 = percentile(value, 95), peak = max(value), hours = dcount(bin(TimeGenerated, 1h)) by _ResourceId, Namespace
+| evaluate pivot(Namespace, any(p95))

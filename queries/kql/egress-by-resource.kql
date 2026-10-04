@@ -1,0 +1,6 @@
+// Pattern 10: outbound bytes per origin and Front Door cache hit ratio (platform metrics to Log Analytics).
+AzureMetrics
+| where TimeGenerated > ago(30d)
+| where MetricName in ('BytesSent', 'Egress', 'ByteHitRatio', 'ResponseSize')
+| summarize total_gb = sum(Total) / 1e9, avg_ratio = avg(Average) by Resource, ResourceProvider, MetricName
+| order by total_gb desc

@@ -1,0 +1,20 @@
+// AI FinOps: per-request token attribution. Each model call logs tenant, agent, use case, model and
+// token counts as custom dimensions (OpenTelemetry gen_ai.* attributes). Prices come from the
+// list-price snapshot loaded as a datatable or external table.
+let prices = datatable(model:string, input_1k:real, cached_1k:real, output_1k:real) [
+    'gpt-4o', 0.0025, 0.00125, 0.01,
+    'gpt-4o-mini', 0.00015, 0.00015, 0.0006
+];
+AppDependencies
+| where TimeGenerated > ago(30d)
+| where Type == 'GenAI' or isnotempty(customDimensions['gen_ai.request.model'])
+| extend model = tostring(customDimensions['gen_ai.request.model']),
+         tenant = tostring(customDimensions['tenant']), agent = tostring(customDimensions['agent']),
+         use_case = tostring(customDimensions['use_case']),
+         input_tokens = toint(customDimensions['gen_ai.usage.input_tokens']),
+         cached_tokens = toint(customDimensions['gen_ai.usage.cached_tokens']),
+         output_tokens = toint(customDimensions['gen_ai.usage.output_tokens'])
+| lookup prices on model
+| extend cost = ((input_tokens - cached_tokens) * input_1k + cached_tokens * cached_1k + output_tokens * output_1k) / 1000
+| summarize requests = count(), cost = sum(cost), p95_cost = percentile(cost, 95) by tenant, agent, use_case, model
+| order by cost desc

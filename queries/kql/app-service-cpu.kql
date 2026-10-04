@@ -1,0 +1,5 @@
+// Patterns 1 and 2: App Service plan CPU and instance count by hour (platform metrics to Log Analytics).
+AzureMetrics
+| where TimeGenerated > ago(30d)
+| where ResourceProvider == 'MICROSOFT.WEB' and MetricName in ('CpuPercentage', 'MemoryPercentage')
+| summarize avg_value = avg(Average), p95 = percentile(Maximum, 95) by Resource, MetricName, bin(TimeGenerated, 1h)

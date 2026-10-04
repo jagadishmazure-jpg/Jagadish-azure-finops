@@ -1,0 +1,7 @@
+// Patterns 2 and 8: requests and replicas per Container App per hour. Zero requests with replicas > 0
+// is the warm-but-idle case.
+AzureMetrics
+| where TimeGenerated > ago(30d)
+| where ResourceProvider == 'MICROSOFT.APP' and MetricName in ('Requests', 'Replicas')
+| summarize total = sum(Total), maxv = max(Maximum) by Resource, MetricName, bin(TimeGenerated, 1h)
+| evaluate pivot(MetricName, sum(total))

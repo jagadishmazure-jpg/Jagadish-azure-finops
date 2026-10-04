@@ -1,0 +1,6 @@
+// Pattern 5: storage accounts that cannot tier on last access yet (tracking off). Lifecycle
+// policies themselves are a child resource; check them per account with the CLI.
+resources
+| where type =~ 'microsoft.storage/storageaccounts'
+| extend kind = tostring(kind), accessTier = tostring(properties.accessTier)
+| project id, name, resourceGroup, subscriptionId, kind, accessTier, sku = tostring(sku.name)

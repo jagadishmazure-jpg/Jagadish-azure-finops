@@ -1,0 +1,27 @@
+{
+  "displayName": "FinOps: deny public IPs without an owner and cost center",
+  "description": "Public IPs are the most common orphan. Every new one must say who pays for it and who owns it.",
+  "mode": "Indexed",
+  "metadata": { "category": "Network" },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "allowedValues": ["Audit", "Deny", "Disabled"],
+      "defaultValue": "Deny"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        { "field": "type", "equals": "Microsoft.Network/publicIPAddresses" },
+        {
+          "anyOf": [
+            { "field": "tags['cost-center']", "exists": "false" },
+            { "field": "tags['owner']", "exists": "false" }
+          ]
+        }
+      ]
+    },
+    "then": { "effect": "[parameters('effect')]" }
+  }
+}

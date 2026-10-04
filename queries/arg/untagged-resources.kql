@@ -1,0 +1,7 @@
+// Pattern 9: resources missing any required tag.
+resources
+| extend t = tags
+| where isnull(t['cost-center']) or isnull(t['owner']) or isnull(t['env']) or isnull(t['app'])
+| project id, name, type, resourceGroup, subscriptionId,
+          missing = strcat_array(set_difference(dynamic(['cost-center','owner','env','app']), bag_keys(t)), ',')
+| order by type asc

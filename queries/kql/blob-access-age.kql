@@ -1,0 +1,6 @@
+// Pattern 5: how much read traffic hits old data (StorageBlobLogs, diagnostic setting required).
+StorageBlobLogs
+| where TimeGenerated > ago(30d)
+| where OperationName == 'GetBlob'
+| extend container = tostring(split(Uri, '/')[3])
+| summarize reads = count(), read_gb = sum(ResponseBodySize) / 1e9 by AccountName, container

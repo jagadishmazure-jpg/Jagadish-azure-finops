@@ -1,0 +1,6 @@
+// Pattern 8: VMs that are stopped inside the guest but still allocated, so compute keeps billing.
+resources
+| where type =~ 'microsoft.compute/virtualmachines'
+| extend power = tostring(properties.extended.instanceView.powerState.code)
+| where power =~ 'PowerState/stopped'
+| project id, name, resourceGroup, subscriptionId, size = tostring(properties.hardwareProfile.vmSize), power

@@ -1,0 +1,6 @@
+// Pattern 8: public IPs not bound to a NIC, load balancer, gateway or NAT gateway.
+resources
+| where type =~ 'microsoft.network/publicipaddresses'
+| where isnull(properties.ipConfiguration) and isnull(properties.natGateway)
+| where tostring(tags['finops-exempt']) != 'true'
+| project id, name, resourceGroup, subscriptionId, sku = tostring(sku.name), allocation = tostring(properties.publicIPAllocationMethod)

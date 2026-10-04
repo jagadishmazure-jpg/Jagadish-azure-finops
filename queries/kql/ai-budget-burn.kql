@@ -1,0 +1,9 @@
+// AI FinOps: month-to-date burn per tenant against its budget; feeds the 80 / 100 / 120 % guardrail alerts.
+let budgets = datatable(tenant:string, budget:real) ['tenant-acme-retail', 170.0, 'tenant-bluebird-pharma', 130.0, 'tenant-cobalt-auto', 80.0, 'internal', 75.0];
+AppDependencies
+| where TimeGenerated > startofmonth(now())
+| extend tenant = tostring(customDimensions['tenant']), cost = todouble(customDimensions['finops.cost_usd'])
+| summarize mtd = sum(cost) by tenant
+| lookup budgets on tenant
+| extend pct = round(100 * mtd / budget, 1)
+| extend level = case(pct >= 120, 'block', pct >= 100, 'degrade', pct >= 80, 'alert', 'ok')

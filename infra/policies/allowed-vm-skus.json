@@ -1,0 +1,27 @@
+{
+  "displayName": "FinOps: allowed virtual machine sizes",
+  "description": "Only sizes on the approved list can be deployed, which stops oversized and premium-GPU VMs landing by accident.",
+  "mode": "Indexed",
+  "metadata": { "category": "Compute" },
+  "parameters": {
+    "allowedSkus": {
+      "type": "Array",
+      "metadata": { "displayName": "Allowed VM sizes" },
+      "defaultValue": ["Standard_B2s", "Standard_D2s_v5", "Standard_D4s_v5", "Standard_E4s_v5"]
+    },
+    "effect": {
+      "type": "String",
+      "allowedValues": ["Audit", "Deny", "Disabled"],
+      "defaultValue": "Deny"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        { "field": "type", "equals": "Microsoft.Compute/virtualMachines" },
+        { "not": { "field": "Microsoft.Compute/virtualMachines/sku.name", "in": "[parameters('allowedSkus')]" } }
+      ]
+    },
+    "then": { "effect": "[parameters('effect')]" }
+  }
+}

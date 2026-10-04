@@ -1,0 +1,7 @@
+// Patterns 2 and 8: Container Apps that keep at least one replica warm. Join with request metrics
+// (queries/kql/container-apps-requests.kql) before proposing minReplicas = 0.
+resources
+| where type =~ 'microsoft.app/containerapps'
+| extend minReplicas = toint(properties.template.scale.minReplicas), env = tostring(tags.env)
+| where minReplicas >= 1
+| project id, name, resourceGroup, subscriptionId, minReplicas, env

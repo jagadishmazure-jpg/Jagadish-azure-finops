@@ -1,0 +1,29 @@
+{
+  "displayName": "FinOps: require cost allocation tags",
+  "description": "Deny new resources that do not carry every required tag (cost-center, owner, env, app).",
+  "mode": "Indexed",
+  "metadata": { "category": "Tags" },
+  "parameters": {
+    "tagNames": {
+      "type": "Array",
+      "metadata": { "displayName": "Required tag names" },
+      "defaultValue": ["cost-center", "owner", "env", "app"]
+    },
+    "effect": {
+      "type": "String",
+      "allowedValues": ["Audit", "Deny", "Disabled"],
+      "defaultValue": "Deny"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "count": {
+        "value": "[parameters('tagNames')]",
+        "name": "tagName",
+        "where": { "field": "[concat('tags[', current('tagName'), ']')]", "exists": "false" }
+      },
+      "greater": 0
+    },
+    "then": { "effect": "[parameters('effect')]" }
+  }
+}

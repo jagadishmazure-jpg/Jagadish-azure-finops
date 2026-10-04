@@ -1,0 +1,9 @@
+// Observability for every pattern: daily cost per resource from the FOCUS export ingested into a
+// custom table (FocusCost_CL), with a simple anomaly flag. Schedule as a log alert.
+FocusCost_CL
+| where ChargePeriodStart > ago(45d)
+| summarize daily = sum(EffectiveCost) by ResourceId, day = bin(ChargePeriodStart, 1d)
+| make-series cost = sum(daily) default = 0 on day step 1d by ResourceId
+| extend (anomalies, score, baseline) = series_decompose_anomalies(cost, 2.5)
+| mv-expand day to typeof(datetime), cost to typeof(real), anomalies to typeof(int)
+| where anomalies == 1

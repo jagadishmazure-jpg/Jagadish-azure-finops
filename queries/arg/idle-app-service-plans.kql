@@ -1,0 +1,7 @@
+// Patterns 7 and 8: App Service / Logic Apps Standard plans with no sites. Usage (runs, requests)
+// must come from Log Analytics; ARG only sees configuration.
+resources
+| where type =~ 'microsoft.web/serverfarms'
+| extend sites = toint(properties.numberOfSites), sku = tostring(sku.name), tier = tostring(sku.tier)
+| where sites == 0 or tier =~ 'WorkflowStandard'
+| project id, name, resourceGroup, subscriptionId, sku, tier, sites

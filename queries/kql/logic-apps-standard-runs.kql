@@ -1,0 +1,7 @@
+// Patterns 7 and 8: workflow runs per Logic App (Standard). Zero runs on an always-on WS plan = idle cost.
+LogicAppWorkflowRuntime
+| where TimeGenerated > ago(30d)
+| where OperationName has 'WorkflowRunCompleted'
+| summarize runs = count(), last_run = max(TimeGenerated) by _ResourceId, WorkflowName
+| join kind=rightouter (LogicAppWorkflowRuntime | distinct _ResourceId) on _ResourceId
+| extend runs = coalesce(runs, 0)

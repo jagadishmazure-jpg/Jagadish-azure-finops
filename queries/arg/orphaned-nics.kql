@@ -1,0 +1,5 @@
+// Pattern 8: network interfaces with no VM and no private endpoint (free, but clutter and IP use).
+resources
+| where type =~ 'microsoft.network/networkinterfaces'
+| where isnull(properties.virtualMachine) and isnull(properties.privateEndpoint)
+| project id, name, resourceGroup, subscriptionId
