@@ -28,7 +28,7 @@ async def test_tools_are_listed_with_read_only_hints():
         tools = {t.name: t for t in (await c.list_tools()).tools}
     assert set(tools) == {"estate_summary", "list_findings", "explain_finding", "draft_change_plan", "plan_status", "execute_plan", "ai_cost_summary"}
     assert "approve" not in " ".join(tools)
-    assert all(t.annotations.readOnlyHint for t in tools.values())
+    assert all(t.annotations.read_only_hint for t in tools.values())
 
 
 async def test_summary_and_filtered_findings():
