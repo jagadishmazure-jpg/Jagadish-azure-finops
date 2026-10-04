@@ -249,7 +249,7 @@ Approvals happen outside the agent, through the CLI (or a ticket in a real setup
 
 ## 10. Observability and KQL
 
-Seven Resource Graph queries back the detectors, for example:
+Six Resource Graph queries back the detectors, for example:
 
 <!-- code: queries/arg/unattached-disks.kql -->
 ```kusto
