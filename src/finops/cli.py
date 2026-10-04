@@ -7,6 +7,7 @@
     finops case-study           the anonymized idle-resources case study
     finops approve --plan ID --approver NAME --role finops-approver
     finops mcp                  run the FinOps agent as an MCP server (stdio)
+    finops mcp-demo             scripted MCP session: plan, refusal, two approvals, dry run
 """
 
 from __future__ import annotations
@@ -54,6 +55,7 @@ def main(argv: list[str] | None = None) -> int:
     ap_.add_argument("--role", required=True)
     ap_.add_argument("--hour", type=int, default=0, help="logical clock hour of the approval")
     sub.add_parser("mcp")
+    sub.add_parser("mcp-demo", help="scripted in-process MCP session: plan, refusal, approvals, dry run")
     args = ap.parse_args(argv)
 
     if args.cmd == "scan":
@@ -106,6 +108,10 @@ def main(argv: list[str] | None = None) -> int:
         out = approvals_dir() / f"{plan.plan_id}.{args.approver.split('@')[0]}.approval.json"
         out.write_text(json.dumps(a.__dict__, indent=1, sort_keys=True))
         print(f"approved {plan.plan_id} (digest {plan.digest[:12]}...) as {args.approver} [{args.role}] -> {out.name}")
+    elif args.cmd == "mcp-demo":
+        from finops.agent.demo import run as demo
+
+        print(demo())
     elif args.cmd == "mcp":
         from finops.agent.mcp_server import main as serve
 

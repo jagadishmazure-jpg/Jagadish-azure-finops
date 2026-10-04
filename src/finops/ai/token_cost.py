@@ -61,6 +61,6 @@ def attribute(requests: list[dict[str, Any]], model_for=None, prompt_cache: bool
 
 
 def reconcile(attributed_total: float, billed_total: float, tolerance: float = 0.01) -> dict[str, Any]:
-    gap = attributed_total - billed_total
+    gap = round(attributed_total - billed_total, 2) + 0.0  # + 0.0 turns -0.0 into 0.0
     return {"attributed": round(attributed_total, 2), "billed": round(billed_total, 2), "gap": round(gap, 2),
             "ok": abs(gap) <= tolerance * max(billed_total, 1e-9)}
