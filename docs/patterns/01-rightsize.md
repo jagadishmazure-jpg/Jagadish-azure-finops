@@ -179,7 +179,7 @@ so you never commit to waste.
 | Weekly or month-end spike missed by the average | Uses p95 plus the projected peak; peak > 100% downgrades confidence |
 | Memory-bound workload looks idle on CPU | Both CPU and memory must be low; no memory data means no finding |
 | Too little history | 14-day minimum (a full weekly cycle twice) |
-| Resize reboots the VM | Plan step is tagged with a maintenance window; executor is dry-run only |
+| Resize reboots the VM | The executor is dry-run only; the approved command is run in a change window by the owner |
 | Size not available in region or zone | Ladder stays inside the same family; allowed SKUs are enforced by policy |
 | Licensing tied to cores | Hybrid Benefit (p06) is assessed on the target size, not the current one |
 
@@ -189,17 +189,16 @@ so you never commit to waste.
 sequenceDiagram
   participant A as FinOps agent
   participant O as Resource owner
-  participant F as FinOps approver
   participant X as Executor (dry-run)
   A->>A: finops scan -> finding p01-25b34694
   A->>O: change plan: resize D8s_v5 -> D4s_v5, rollback command
-  O->>X: approve (resource-owner)
-  F->>X: approve (finops-approver)
-  X->>X: check digest, roles, TTL
-  X-->>A: DRY-RUN az vm resize ... (nothing changed)
+  O->>X: approve (resource-owner), bound to the plan digest
+  X->>X: check digest, role, 72 h TTL, approver is not the requester
+  X-->>A: [DRY-RUN] az vm resize ... (nothing changed)
 ```
 
-Every resize step carries its rollback (`az vm resize` back to the old size). The approval and
+A resize is reversible, so one approver is enough; plans with an irreversible step need two.
+Every resize step carries its rollback ("resize back to the original size"). The approval and
 plan model is described in [finops-agent.md](../finops-agent.md).
 
 ## 9. IaC and policy
@@ -240,7 +239,7 @@ restricts new VMs to a short list, assigned in **Audit** for dev and **Deny** fo
 ```
 <!-- /code -->
 
-Terraform (`azurerm_policy_definition.finops["allowed-vm-skus"]`) and Bicep
+Terraform (`azurerm_policy_definition.this["allowed-vm-skus"]`) and Bicep
 (`modules/policies.bicep`) both load this same JSON file, so there is one source of truth.
 
 ## 10. Observability and KQL

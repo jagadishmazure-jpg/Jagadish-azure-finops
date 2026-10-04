@@ -47,6 +47,18 @@ def excerpt(ref: str) -> tuple[str, str]:
     if not name:
         return lang, src.rstrip("\n")
     lines = src.splitlines()
+    if f.suffix != ".py":
+        # HCL / Bicep: the block whose first line starts with ``name``, up to its closing brace
+        for i, line in enumerate(lines):
+            if line.startswith(name):
+                depth, j = 0, i
+                while True:
+                    depth += lines[j].count("{") - lines[j].count("}")
+                    if depth <= 0 and j > i or (depth == 0 and "{" in lines[i] and j == i and lines[i].rstrip().endswith("}")):
+                        break
+                    j += 1
+                return lang, "\n".join(lines[i : j + 1])
+        raise SystemExit(f"{ref}: no block starting with {name}")
     for node in ast.parse(src).body:
         names = []
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
