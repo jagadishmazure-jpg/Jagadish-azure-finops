@@ -260,7 +260,9 @@ SIMPLE_Q = [
     "track parcel {n}",
     "is delivery {n} late",
     "show status of load {n}",
+    "can you tell me whether the delivery for order {n} still arrives today",  # long but simple
 ]
+TRICKY_COMPLEX = "eta impact of the port strike on lane {n}"  # short, sounds simple, needs reasoning
 COMPLEX_Q = [
     "invoice {n} has a rate mismatch against contract terms and a fuel surcharge dispute, explain and propose a resolution",
     "summarize the dispatch shift including exceptions, driver hours risks and reroutes for depot {n}",
@@ -280,14 +282,14 @@ def ai_requests(count: int = 6000) -> list[dict[str, Any]]:
         tenant = rng.choices(TENANTS, weights=[0.4, 0.25, 0.2, 0.15])[0]
         complex_ = agent != "eta-assistant" or rng.random() < 0.08
         if complex_:
-            tmpl = rng.choice(COMPLEX_Q)
+            tmpl = TRICKY_COMPLEX if agent == "eta-assistant" and rng.random() < 0.3 else rng.choice(COMPLEX_Q)
             n = rng.randint(100, 999)
-            prompt_tokens = rng.randint(1800, 4200)
+            prompt_tokens = rng.randint(2600, 5000)
             completion_tokens = rng.randint(350, 900)
         else:
             tmpl = rng.choice(SIMPLE_Q)
             n = rng.randint(1000, 1060)  # small id space -> repeated questions -> cache hits
-            prompt_tokens = rng.randint(900, 1300)
+            prompt_tokens = rng.randint(1400, 1800)
             completion_tokens = rng.randint(60, 160)
         out.append({
             "request_id": f"r{i:05d}",
@@ -296,7 +298,7 @@ def ai_requests(count: int = 6000) -> list[dict[str, Any]]:
             "agent": agent,
             "use_case": AGENTS[agent],
             "prompt": tmpl.format(n=n),
-            "system_prefix_tokens": 800,
+            "system_prefix_tokens": 1280,  # system prompt + tool schemas, identical on every call
             "prompt_tokens": prompt_tokens,
             "completion_tokens": completion_tokens,
             "label": "complex" if complex_ else "simple",
@@ -309,9 +311,9 @@ def ai_requests(count: int = 6000) -> list[dict[str, Any]]:
 def ai_use_cases() -> list[dict[str, Any]]:
     """Business inputs for ROI. Value drivers are ASSUMPTIONS a coach agrees with the business owner."""
     return [
-        {"use_case": "customer-eta-chat", "owner": "CC-2002", "minutes_saved_per_task": 1.5, "loaded_rate_per_hour": 38.0, "adoption": 0.85, "build_cost": 42000, "amortize_months": 24, "platform_monthly": 180.0},
-        {"use_case": "invoice-exception-triage", "owner": "CC-1001", "minutes_saved_per_task": 11.0, "loaded_rate_per_hour": 52.0, "adoption": 0.7, "build_cost": 65000, "amortize_months": 24, "platform_monthly": 220.0},
-        {"use_case": "dispatch-shift-summary", "owner": "CC-1001", "minutes_saved_per_task": 2.0, "loaded_rate_per_hour": 45.0, "adoption": 0.4, "build_cost": 30000, "amortize_months": 24, "platform_monthly": 160.0},
+        {"use_case": "customer-eta-chat", "owner": "CC-2002", "minutes_saved_per_task": 1.5, "loaded_rate_per_hour": 38.0, "adoption": 0.6, "build_cost": 42000, "amortize_months": 24, "platform_monthly": 180.0},
+        {"use_case": "invoice-exception-triage", "owner": "CC-1001", "minutes_saved_per_task": 6.0, "loaded_rate_per_hour": 52.0, "adoption": 0.5, "build_cost": 65000, "amortize_months": 24, "platform_monthly": 220.0},
+        {"use_case": "dispatch-shift-summary", "owner": "CC-1001", "minutes_saved_per_task": 1.0, "loaded_rate_per_hour": 45.0, "adoption": 0.15, "build_cost": 30000, "amortize_months": 24, "platform_monthly": 160.0},
     ]
 
 

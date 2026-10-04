@@ -1,6 +1,6 @@
 [
  {
-  "adoption": 0.85,
+  "adoption": 0.6,
   "amortize_months": 24,
   "build_cost": 42000,
   "loaded_rate_per_hour": 38.0,
@@ -10,21 +10,21 @@
   "use_case": "customer-eta-chat"
  },
  {
-  "adoption": 0.7,
+  "adoption": 0.5,
   "amortize_months": 24,
   "build_cost": 65000,
   "loaded_rate_per_hour": 52.0,
-  "minutes_saved_per_task": 11.0,
+  "minutes_saved_per_task": 6.0,
   "owner": "CC-1001",
   "platform_monthly": 220.0,
   "use_case": "invoice-exception-triage"
  },
  {
-  "adoption": 0.4,
+  "adoption": 0.15,
   "amortize_months": 24,
   "build_cost": 30000,
   "loaded_rate_per_hour": 45.0,
-  "minutes_saved_per_task": 2.0,
+  "minutes_saved_per_task": 1.0,
   "owner": "CC-1001",
   "platform_monthly": 160.0,
   "use_case": "dispatch-shift-summary"
