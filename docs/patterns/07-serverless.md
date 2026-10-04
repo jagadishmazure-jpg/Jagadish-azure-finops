@@ -142,9 +142,9 @@ run in parallel; that deletion goes through pattern 8 and its approval.
 ## 9. IaC and policy
 
 The guardrail is a budget plus an allowed-SKU style policy for plans. This repo's budget and action
-group ([`infra/terraform/main.tf`](../../infra/terraform/main.tf)) are what caught the idle WS1 plan
-in the [case study](../case-study.md): it was the largest line on a practice subscription's
-forecast. A policy that audits `Microsoft.Web/serverfarms` with `WS*` or `EP*` SKUs outside
+group ([`infra/terraform/main.tf`](../../infra/terraform/main.tf)) are the early warning for this
+kind of always-on cost; the [case study](../case-study.md) walks through an idle WS1 plan found
+in a cost review. A policy that audits `Microsoft.Web/serverfarms` with `WS*` or `EP*` SKUs outside
 approved resource groups is a natural extension.
 
 ## 10. Observability and KQL
