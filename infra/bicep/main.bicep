@@ -5,6 +5,7 @@ targetScope = 'subscription'
 
 @allowed(['dev', 'prod'])
 param environment string = 'dev'
+@allowed(['eastus2', 'westus2', 'westeurope'])
 param location string = 'eastus2'
 @description('Monthly budget for the FinOps resource group')
 param monthlyBudget int = 10

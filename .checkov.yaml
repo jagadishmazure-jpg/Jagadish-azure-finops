@@ -1,0 +1,18 @@
+# Checkov config for infra/terraform. Every skip has a reason; anything not listed fails CI.
+# The storage account is a demo target for the lifecycle policy (pattern 05); it holds no data.
+compact: true
+quiet: true
+framework:
+  - terraform
+skip-check:
+  # Public network access stays on so the runner can manage it without a self-hosted agent;
+  # shared keys are disabled and TLS 1.2 is enforced, and it stores nothing.
+  - CKV_AZURE_59
+  # LRS is the smallest setting on purpose (cost demo); real data stores use ZRS/GRS.
+  - CKV_AZURE_206
+  # Queue logging: the account has no queues.
+  - CKV_AZURE_33
+  # Private endpoint costs about $7.30 a month per endpoint and needs a VNet; out of scope.
+  - CKV2_AZURE_33
+  # Customer-managed keys need a Key Vault with purge protection; platform keys are fine for an empty demo account.
+  - CKV2_AZURE_1

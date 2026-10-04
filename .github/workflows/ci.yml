@@ -1,0 +1,41 @@
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip }
+      - run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check . && ruff format --check .
+      - name: Tests (offline, synthetic data, list-price snapshot)
+        run: pytest -q
+      - name: Synthetic data is current
+        run: python scripts/generate_data.py --check
+      - name: Doc outputs match a fresh run
+        run: python scripts/render_docs.py --check
+      - name: Full scan, AI FinOps report and case study
+        run: |
+          finops scan
+          finops ai
+          finops case-study
+  bicep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Bicep CLI (pinned)
+        run: |
+          curl -sSLo bicep https://github.com/Azure/bicep/releases/download/v0.47.16/bicep-linux-x64
+          chmod +x bicep && sudo mv bicep /usr/local/bin/bicep && bicep --version
+      - name: bicep build (linter runs as part of build; warnings fail the job)
+        run: |
+          bicep build infra/bicep/main.bicep --stdout > /dev/null 2> bicep.log || { cat bicep.log; exit 1; }
+          cat bicep.log
+          if grep -q "Warning" bicep.log; then exit 1; fi
