@@ -27,7 +27,7 @@
   public IPs), a budget with an action group, a storage lifecycle policy and an autoscale example,
   on the smallest settings. GitHub Actions with OIDC (no secrets), dev to prod approval, and a
   Terraform or Bicep choice, switched off until a subscription is configured.
-- **236 automated tests**, all offline, plus docs whose numbers and code excerpts are regenerated
+- **235 automated tests**, all offline, plus docs whose numbers and code excerpts are regenerated
   from the code and checked in CI.
 
 **Skills demonstrated:** Azure FinOps, Cost Management and FOCUS exports, Azure Advisor, Azure
@@ -153,7 +153,7 @@ Step by step, including connecting to a real subscription in read-only mode:
 ## Test
 
 ```bash
-pytest -q                               # 236 tests, offline
+pytest -q                               # 235 tests, offline
 ruff check . && ruff format --check .
 python scripts/generate_data.py --check # synthetic data matches the generator
 python scripts/render_docs.py --check   # doc outputs and code excerpts match the code
