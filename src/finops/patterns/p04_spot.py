@@ -68,8 +68,8 @@ def evaluate(job: dict[str, Any], rate: float = EVICTION_RATE_PER_HOUR, checkpoi
     mean_hours = sum(s.node_hours for s in sims) / len(sims)
     walls = [s.wall_hours for s in sims]
     return {
-        "payg_monthly": job["nodes"] * job["hours_per_run"] * payg * job["runs_per_month"],
-        "spot_monthly": mean_hours * spot * job["runs_per_month"],
+        "payg_monthly": round(job["nodes"] * job["hours_per_run"] * payg * job["runs_per_month"], 2),
+        "spot_monthly": round(mean_hours * spot * job["runs_per_month"], 2),
         "rework_pct": round(100 * (mean_hours / (job["nodes"] * job["hours_per_run"]) - 1), 1),
         "evictions_per_run": round(sum(s.evictions for s in sims) / len(sims), 2),
         "wall_p95_hours": round(percentile(walls, 95), 2),

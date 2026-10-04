@@ -43,6 +43,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("scan")
     p = sub.add_parser("pattern")
     p.add_argument("id", help="p01 .. p10")
+    p.add_argument("--evidence", action="store_true", help="also print each finding's evidence and change")
     sub.add_parser("ai")
     a = sub.add_parser("agent")
     a.add_argument("--top", type=int, default=5)
@@ -64,7 +65,13 @@ def main(argv: list[str] | None = None) -> int:
         if not mod:
             print(f"unknown pattern {args.id}; choose from {[m[:3] for m in MODULES]}", file=sys.stderr)
             return 2
-        print(import_module(f"finops.patterns.{mod}").analyze().report())
+        res = import_module(f"finops.patterns.{mod}").analyze()
+        print(res.report())
+        if args.evidence:
+            for f in sorted(res.findings, key=lambda x: (-x.savings_monthly, x.resource_name)):
+                print(f"  {f.id} {f.resource_name}")
+                print(f"    evidence: {json.dumps(f.evidence, sort_keys=True)}")
+                print(f"    change:   {json.dumps(f.change, sort_keys=True)}")
     elif args.cmd == "ai":
         from finops.ai.report import report
 
