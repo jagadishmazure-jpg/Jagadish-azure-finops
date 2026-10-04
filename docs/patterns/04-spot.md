@@ -44,7 +44,9 @@ redone and the replacement takes `RESTART_MINUTES` to arrive:
 
 <!-- code: src/finops/patterns/p04_spot.py::simulate_run -->
 ```python
-def simulate_run(rng: random.Random, nodes: int, hours: float, checkpoint_min: float, rate: float = EVICTION_RATE_PER_HOUR) -> SimResult:
+def simulate_run(
+    rng: random.Random, nodes: int, hours: float, checkpoint_min: float, rate: float = EVICTION_RATE_PER_HOUR
+) -> SimResult:
     """Replay one run. Each node owns 1/nodes of the work. On eviction the node loses the work
     since its last checkpoint (all of it if checkpoint_min == 0) and pays a restart delay."""
     step = 1 / 60  # minute resolution
@@ -71,10 +73,17 @@ def simulate_run(rng: random.Random, nodes: int, hours: float, checkpoint_min: f
 
 <!-- code: src/finops/patterns/p04_spot.py::evaluate -->
 ```python
-def evaluate(job: dict[str, Any], rate: float = EVICTION_RATE_PER_HOUR, checkpoint: bool = True) -> dict[str, Any]:
+def evaluate(
+    job: dict[str, Any], rate: float = EVICTION_RATE_PER_HOUR, checkpoint: bool = True
+) -> dict[str, Any]:
     book = default_book()
     rng = random.Random(SEED)
-    sims = [simulate_run(rng, job["nodes"], job["hours_per_run"], job["checkpoint_minutes"] if checkpoint else 0, rate) for _ in range(SIMULATED_RUNS)]
+    sims = [
+        simulate_run(
+            rng, job["nodes"], job["hours_per_run"], job["checkpoint_minutes"] if checkpoint else 0, rate
+        )
+        for _ in range(SIMULATED_RUNS)
+    ]
     payg = book.price(vm_key(job["size"]))
     spot = book.price(vm_key(job["size"], offer="spot"))
     mean_hours = sum(s.node_hours for s in sims) / len(sims)
@@ -96,8 +105,14 @@ Eviction handling is real code, not only a cost model. A worker that gets the Sc
 
 <!-- code: src/finops/patterns/p04_spot.py::run_resumable -->
 ```python
-def run_resumable(job: str, steps: list[Callable[[Any], Any]], store: CheckpointStore, preempt_at: set[int] | None = None,
-                  checkpoint_every: int = 1, initial: Any = 0) -> Any:
+def run_resumable(
+    job: str,
+    steps: list[Callable[[Any], Any]],
+    store: CheckpointStore,
+    preempt_at: set[int] | None = None,
+    checkpoint_every: int = 1,
+    initial: Any = 0,
+) -> Any:
     """Run ``steps`` in order, resuming from the store. ``preempt_at`` simulates an Azure Scheduled
     Events ``Preempt`` notice arriving before the given step: the worker checkpoints and exits."""
     start, state = store.load(job)

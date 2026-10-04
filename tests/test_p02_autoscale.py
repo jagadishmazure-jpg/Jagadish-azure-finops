@@ -1,8 +1,8 @@
 import pytest
 import yaml
+from tests.conftest import find
 
 from finops.patterns import p02_autoscale as P
-from tests.conftest import find
 
 
 @pytest.fixture(scope="module")

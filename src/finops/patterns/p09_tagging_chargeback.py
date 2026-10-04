@@ -29,7 +29,11 @@ def compliance(rows: list[CostRow], required: list[str]) -> dict[str, Any]:
     total = sum(r.cost for r in rows)
     ok = sum(r.cost for r in rows if all(k in r.tags for k in required))
     missing = sorted({r.resource_name for r in rows if not all(k in r.tags for k in required)})
-    return {"tagged_cost_pct": round(100 * ok / total, 1), "untagged_resources": missing, "untagged_cost": round(total - ok, 2)}
+    return {
+        "tagged_cost_pct": round(100 * ok / total, 1),
+        "untagged_resources": missing,
+        "untagged_cost": round(total - ok, 2),
+    }
 
 
 def owner_of(row: CostRow, rules: dict[str, Any]) -> tuple[str, str]:
@@ -54,11 +58,17 @@ def showback(rows: list[CostRow], rules: dict[str, Any]) -> dict[str, dict[str, 
     out = {}
     for cc in sorted(direct):
         share = 0.0 if cc == "unallocated" else shared_pool * direct[cc] / base
-        out[cc] = {"direct": round(direct[cc], 2), "shared": round(share, 2), "total": round(direct[cc] + share, 2)}
+        out[cc] = {
+            "direct": round(direct[cc], 2),
+            "shared": round(share, 2),
+            "total": round(direct[cc] + share, 2),
+        }
     return out
 
 
-def budget_status(rows: list[CostRow], rules: dict[str, Any], day: int = FORECAST_DAY) -> list[dict[str, Any]]:
+def budget_status(
+    rows: list[CostRow], rules: dict[str, Any], day: int = FORECAST_DAY
+) -> list[dict[str, Any]]:
     """Budgets are checked against ALLOCATED cost (direct + shared share), the number a cost
     center is charged, using a straight-line forecast from the first ``day`` days."""
     days = sorted({r.day for r in rows})
@@ -69,8 +79,16 @@ def budget_status(rows: list[CostRow], rules: dict[str, Any], day: int = FORECAS
         mtd = {k: v["total"] for k, v in alloc.items()}.get(cc, 0.0)
         forecast = mtd / day * len(days)
         hit = [t for t in rules["alert_thresholds"] if forecast >= budget * t]
-        out.append({"cost_center": cc, "budget": budget, "mtd": round(mtd, 2), "forecast": round(forecast, 2),
-                    "forecast_pct": round(100 * forecast / budget, 1), "alerts": [f"{int(t * 100)}%" for t in hit]})
+        out.append(
+            {
+                "cost_center": cc,
+                "budget": budget,
+                "mtd": round(mtd, 2),
+                "forecast": round(forecast, 2),
+                "forecast_pct": round(100 * forecast / budget, 1),
+                "alerts": [f"{int(t * 100)}%" for t in hit],
+            }
+        )
     return out
 
 
@@ -80,20 +98,39 @@ def analyze() -> PatternResult:
     comp = compliance(rows, rules["required_tags"])
     sb = showback(rows, rules)
     budgets = budget_status(rows, rules)
-    res = PatternResult(PATTERN, "Tagging, showback/chargeback and budgets", [], extra={"compliance": comp, "showback": sb, "budgets": budgets})
+    res = PatternResult(
+        PATTERN,
+        "Tagging, showback/chargeback and budgets",
+        [],
+        extra={"compliance": comp, "showback": sb, "budgets": budgets},
+    )
     mapped = defaultdict(float)
     for r in rows:
         cc, how = owner_of(r, rules)
         if how == "resource-group map":
             mapped[r.resource_name] += r.cost
     for name, cost in sorted(mapped.items()):
-        res.findings.append(Finding(
-            PATTERN, f"tag:{name}", name, "add cost-center tag (owner from resource-group map)", round(cost, 2), round(cost, 2),
-            change={"op": "tag", "tags": {"cost-center": "from-rg-map"}}, evidence={"monthly_cost_now_allocated": round(cost, 2)},
-        ))
-    res.notes.append(f"tag compliance: {comp['tagged_cost_pct']}% of cost has all required tags; untagged cost {money(comp['untagged_cost'])}")
+        res.findings.append(
+            Finding(
+                PATTERN,
+                f"tag:{name}",
+                name,
+                "add cost-center tag (owner from resource-group map)",
+                round(cost, 2),
+                round(cost, 2),
+                change={"op": "tag", "tags": {"cost-center": "from-rg-map"}},
+                evidence={"monthly_cost_now_allocated": round(cost, 2)},
+            )
+        )
+    res.notes.append(
+        f"tag compliance: {comp['tagged_cost_pct']}% of cost has all required tags; untagged cost {money(comp['untagged_cost'])}"
+    )
     for cc, v in sb.items():
-        res.notes.append(f"showback {cc:<12} direct {money(v['direct']):>10}  shared {money(v['shared']):>9}  total {money(v['total']):>10}")
+        res.notes.append(
+            f"showback {cc:<12} direct {money(v['direct']):>10}  shared {money(v['shared']):>9}  total {money(v['total']):>10}"
+        )
     for b in budgets:
-        res.notes.append(f"budget {b['cost_center']}: day-{FORECAST_DAY} forecast {money(b['forecast'])} = {b['forecast_pct']}% of {money(b['budget'])} -> alerts {b['alerts'] or 'none'}")
+        res.notes.append(
+            f"budget {b['cost_center']}: day-{FORECAST_DAY} forecast {money(b['forecast'])} = {b['forecast_pct']}% of {money(b['budget'])} -> alerts {b['alerts'] or 'none'}"
+        )
     return res

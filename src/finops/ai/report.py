@@ -17,7 +17,11 @@ LOOSE_THRESHOLD = 0.45  # deliberately too loose: shows why the eval gate exists
 
 def _cost(reqs, model_for=None, prompt_cache=False, skip: set[str] | None = None) -> float:
     skip = skip or set()
-    return sum(request_cost(q, model_for(q) if model_for else None, prompt_cache) * q["weight"] for q in reqs if q["request_id"] not in skip)
+    return sum(
+        request_cost(q, model_for(q) if model_for else None, prompt_cache) * q["weight"]
+        for q in reqs
+        if q["request_id"] not in skip
+    )
 
 
 def _quality(reqs, model_for, hits: set[str] | None = None, wrong: set[str] | None = None) -> float:
@@ -44,11 +48,22 @@ def analyze() -> dict[str, Any]:
     cands = [
         Candidate("route simple -> gpt-4o-mini", _cost(reqs, routing.route), _quality(reqs, routing.route)),
         Candidate("provider prompt caching", _cost(reqs, prompt_cache=True), _quality(reqs, base_model)),
-        Candidate("response cache (exact + semantic 0.85)", _cost(reqs, skip=cache["hit_ids"]), _quality(reqs, base_model, cache["hit_ids"], cache["wrong_ids"])),
-        Candidate(f"semantic cache, loose threshold {LOOSE_THRESHOLD}", _cost(reqs, skip=loose["hit_ids"]), _quality(reqs, base_model, loose["hit_ids"], loose["wrong_ids"])),
+        Candidate(
+            "response cache (exact + semantic 0.85)",
+            _cost(reqs, skip=cache["hit_ids"]),
+            _quality(reqs, base_model, cache["hit_ids"], cache["wrong_ids"]),
+        ),
+        Candidate(
+            f"semantic cache, loose threshold {LOOSE_THRESHOLD}",
+            _cost(reqs, skip=loose["hit_ids"]),
+            _quality(reqs, base_model, loose["hit_ids"], loose["wrong_ids"]),
+        ),
         Candidate("everything on gpt-4o-mini", _cost(reqs, all_small), _quality(reqs, all_small)),
-        Candidate("combined: route + prompt cache + response cache", _cost(reqs, routing.route, True, cache["hit_ids"]),
-                  _quality(reqs, routing.route, cache["hit_ids"], cache["wrong_ids"])),
+        Candidate(
+            "combined: route + prompt cache + response cache",
+            _cost(reqs, routing.route, True, cache["hit_ids"]),
+            _quality(reqs, routing.route, cache["hit_ids"], cache["wrong_ids"]),
+        ),
     ]
     decisions = [gate(baseline, c) for c in cands]
     combined = cands[-1]
@@ -60,7 +75,9 @@ def analyze() -> dict[str, Any]:
     budgets = load_json("ai/budgets.json")
     guard = enforce(reqs, budgets)
 
-    opt_by_uc = attribute([q for q in reqs if q["request_id"] not in cache["hit_ids"]], routing.route, prompt_cache=True)["by_use_case"]
+    opt_by_uc = attribute(
+        [q for q in reqs if q["request_id"] not in cache["hit_ids"]], routing.route, prompt_cache=True
+    )["by_use_case"]
     tasks = Counter()
     for q in reqs:
         tasks[q["use_case"]] += q["weight"]
@@ -70,10 +87,18 @@ def analyze() -> dict[str, Any]:
         after = roi.roi(uc, tasks[uc["use_case"]], opt_by_uc.get(uc["use_case"], 0.0))
         rois.append({"before": before, "after": after})
     return {
-        "attribution": base, "reconcile": reconcile(base["total"], billed), "routing_confusion": routing.confusion(reqs),
-        "cache": {k: v for k, v in cache.items() if not k.endswith("_ids")}, "loose_cache_wrong": len(loose["wrong_ids"]),
-        "baseline": baseline, "candidates": cands, "decisions": decisions, "combined": combined,
-        "ptu": ptu_view, "budget_guard": guard, "roi": rois,
+        "attribution": base,
+        "reconcile": reconcile(base["total"], billed),
+        "routing_confusion": routing.confusion(reqs),
+        "cache": {k: v for k, v in cache.items() if not k.endswith("_ids")},
+        "loose_cache_wrong": len(loose["wrong_ids"]),
+        "baseline": baseline,
+        "candidates": cands,
+        "decisions": decisions,
+        "combined": combined,
+        "ptu": ptu_view,
+        "budget_guard": guard,
+        "roi": rois,
     }
 
 
@@ -81,28 +106,42 @@ def report(a: dict[str, Any] | None = None) -> str:
     a = a or analyze()
     att = a["attribution"]
     L = ["== ai-finops: token cost attribution, routing, caching, budgets, PTU, ROI"]
-    L.append(f"  requests/month {att['requests']:,}  cost {money(att['total'])}  per request p50 ${att['per_request_p50']:.4f} p95 ${att['per_request_p95']:.4f}")
+    L.append(
+        f"  requests/month {att['requests']:,}  cost {money(att['total'])}  per request p50 ${att['per_request_p50']:.4f} p95 ${att['per_request_p95']:.4f}"
+    )
     r = a["reconcile"]
-    L.append(f"  reconcile to FOCUS bill: attributed {money(r['attributed'])} vs billed {money(r['billed'])} gap {money(r['gap'])} -> {'OK' if r['ok'] else 'MISMATCH'}")
+    L.append(
+        f"  reconcile to FOCUS bill: attributed {money(r['attributed'])} vs billed {money(r['billed'])} gap {money(r['gap'])} -> {'OK' if r['ok'] else 'MISMATCH'}"
+    )
     for k in ("by_tenant", "by_agent", "by_use_case"):
         L.append(f"  {k}: " + ", ".join(f"{n} {money(v)}" for n, v in att[k].items()))
     L.append(f"  router confusion (label->route): {a['routing_confusion']}")
     c = a["cache"]
-    L.append(f"  response cache: {c['exact']} exact + {c['semantic']} semantic hits of {c['exact'] + c['semantic'] + c['miss']} requests ({c['hit_rate']}%); loose threshold serves {a['loose_cache_wrong']} wrong answers")
+    L.append(
+        f"  response cache: {c['exact']} exact + {c['semantic']} semantic hits of {c['exact'] + c['semantic'] + c['miss']} requests ({c['hit_rate']}%); loose threshold serves {a['loose_cache_wrong']} wrong answers"
+    )
     b = a["baseline"]
     L.append(f"  eval gate (max quality drop 1.0 pt) vs baseline {money(b.monthly_cost)} @ {b.quality_pct}%:")
     for cand, d in zip(a["candidates"], a["decisions"], strict=True):
-        L.append(f"    {'SHIP ' if d.ship else 'BLOCK'} {cand.name:<48} {money(cand.monthly_cost):>9}  quality {cand.quality_pct:>6}% ({d.quality_delta:+.2f})  save {money(d.savings):>9}  {d.reason}")
+        L.append(
+            f"    {'SHIP ' if d.ship else 'BLOCK'} {cand.name:<48} {money(cand.monthly_cost):>9}  quality {cand.quality_pct:>6}% ({d.quality_delta:+.2f})  save {money(d.savings):>9}  {d.reason}"
+        )
     p = a["ptu"]
-    L.append(f"  PTU: peak {p['peak_tpm']:,} TPM -> {p['ptus']} PTU = {money(p['ptu_monthly'])}/mo vs PAYG {money(p['payg_monthly'])}/mo; utilization {p['utilization_pct']}%; "
-             f"break-even at {p['breakeven_volume_multiple']}x today's volume ({p['breakeven_utilization_pct']}% utilization) -> {p['decision']}")
+    L.append(
+        f"  PTU: peak {p['peak_tpm']:,} TPM -> {p['ptus']} PTU = {money(p['ptu_monthly'])}/mo vs PAYG {money(p['payg_monthly'])}/mo; utilization {p['utilization_pct']}%; "
+        f"break-even at {p['breakeven_volume_multiple']}x today's volume ({p['breakeven_utilization_pct']}% utilization) -> {p['decision']}"
+    )
     g = a["budget_guard"]
-    L.append(f"  budget guardrails: {g['counts']} -> spend {money(g['total'])} (from {money(b.monthly_cost)})")
+    L.append(
+        f"  budget guardrails: {g['counts']} -> spend {money(g['total'])} (from {money(b.monthly_cost)})"
+    )
     for line in g["alerts"]:
         L.append(f"    {line}")
     L.append("  ROI per use case (before -> after the shipped optimizations):")
     for x in a["roi"]:
         bf, af = x["before"], x["after"]
-        L.append(f"    {bf['use_case']:<26} tasks {bf['tasks']:>6,}  value {money(bf['value']):>10}  cost {money(bf['total_cost']):>9} -> {money(af['total_cost']):>9}  "
-                 f"ROI {bf['roi_pct']:>6}% -> {af['roi_pct']:>6}%  payback {bf['payback_months']} -> {af['payback_months']} mo  [{af['verdict']}]")
+        L.append(
+            f"    {bf['use_case']:<26} tasks {bf['tasks']:>6,}  value {money(bf['value']):>10}  cost {money(bf['total_cost']):>9} -> {money(af['total_cost']):>9}  "
+            f"ROI {bf['roi_pct']:>6}% -> {af['roi_pct']:>6}%  payback {bf['payback_months']} -> {af['payback_months']} mo  [{af['verdict']}]"
+        )
     return "\n".join(L)

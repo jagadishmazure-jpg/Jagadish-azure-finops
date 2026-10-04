@@ -50,7 +50,9 @@ def test_finding_ids_are_stable():
 def test_commands_for_each_op():
     assert az_command(_f()).startswith("az snapshot create")
     rid = "/subscriptions/s/resourceGroups/rg/providers/Microsoft.Compute/virtualMachines/vm1"
-    f = Finding("p01-rightsize", rid, "vm1", "resize", 1, 0, change={"op": "resize", "kind": "vm", "to": "D2s_v5"})
+    f = Finding(
+        "p01-rightsize", rid, "vm1", "resize", 1, 0, change={"op": "resize", "kind": "vm", "to": "D2s_v5"}
+    )
     assert az_command(f) == "az vm resize -g rg -n vm1 --size Standard_D2s_v5"
 
 
@@ -101,8 +103,22 @@ def test_approvals_expire():
 
 
 def test_purchase_needs_finance():
-    f = Finding("p03-commitments", "scope:x", "fleet", "buy", 10, 5, change={"op": "purchase-commitment", "type": "reservation-1y",
-                "quantity": 2, "sku": "D2s_v5", "scope": "shared"}, reversible=False)
+    f = Finding(
+        "p03-commitments",
+        "scope:x",
+        "fleet",
+        "buy",
+        10,
+        5,
+        change={
+            "op": "purchase-commitment",
+            "type": "reservation-1y",
+            "quantity": 2,
+            "sku": "D2s_v5",
+            "scope": "shared",
+        },
+        reversible=False,
+    )
     p = build_plan([f])
     approvals = [A.approve(p, "alice", "resource-owner", 0), A.approve(p, "bob", "finops-approver", 0)]
     assert any("finance" in x for x in A.check(p, approvals, 1))

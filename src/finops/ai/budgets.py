@@ -29,8 +29,15 @@ def enforce(requests: list[dict[str, Any]], cfg: dict[str, Any]) -> dict[str, An
         t, a = q["tenant"], q["agent"]
         ratio = max(spend_t[t] / cfg["tenant_monthly_usd"][t], spend_a[a] / cfg["agent_monthly_usd"][a])
         critical = a in cfg["critical_agents"]
-        for who, spent, budget in ((f"tenant:{t}", spend_t[t], cfg["tenant_monthly_usd"][t]), (f"agent:{a}", spend_a[a], cfg["agent_monthly_usd"][a])):
-            for level, name in ((cfg["soft_alert"], "80%"), (cfg["degrade_at"], "100%"), (cfg["block_at"], "120%")):
+        for who, spent, budget in (
+            (f"tenant:{t}", spend_t[t], cfg["tenant_monthly_usd"][t]),
+            (f"agent:{a}", spend_a[a], cfg["agent_monthly_usd"][a]),
+        ):
+            for level, name in (
+                (cfg["soft_alert"], "80%"),
+                (cfg["degrade_at"], "100%"),
+                (cfg["block_at"], "120%"),
+            ):
                 if spent >= budget * level and (who, name) not in alerted:
                     alerted.add((who, name))
                     alerts.append(f"day {q['day']:>2}: {who} reached {name} of ${budget:,.0f}")
@@ -50,4 +57,10 @@ def enforce(requests: list[dict[str, Any]], cfg: dict[str, Any]) -> dict[str, An
         spend_t[t] += c
         spend_a[a] += c
         total += c
-    return {"total": total, "counts": counts, "alerts": alerts, "spend_tenant": dict(spend_t), "spend_agent": dict(spend_a)}
+    return {
+        "total": total,
+        "counts": counts,
+        "alerts": alerts,
+        "spend_tenant": dict(spend_t),
+        "spend_agent": dict(spend_a),
+    }

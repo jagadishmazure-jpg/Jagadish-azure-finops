@@ -20,13 +20,21 @@ def generate_all() -> dict[str, str]:
     cs = S.case_study()
     return {
         "inventory/resources.json": _j(inv),
-        "metrics/utilization.json": json.dumps(S.utilization(inv), sort_keys=True, separators=(",", ":")) + "\n",
+        "metrics/utilization.json": json.dumps(S.utilization(inv), sort_keys=True, separators=(",", ":"))
+        + "\n",
         "metrics/web-traffic.json": _j(S.web_traffic()),
-        "metrics/compute-usage.json": _j({"unit": "D2s_v5-equivalent instances (instance size flexibility)", "hourly": S.compute_usage(inv)}),
+        "metrics/compute-usage.json": _j(
+            {
+                "unit": "D2s_v5-equivalent instances (instance size flexibility)",
+                "hourly": S.compute_usage(inv),
+            }
+        ),
         "batch/jobs.json": _j(S.batch_jobs()),
         "storage/containers.json": _j(S.storage_containers()),
         "licenses/entitlements.json": _j(S.license_entitlements()),
-        "network/endpoints.json": _j({"endpoints": S.network_endpoints(), "cross_region": S.cross_region_transfers()}),
+        "network/endpoints.json": _j(
+            {"endpoints": S.network_endpoints(), "cross_region": S.cross_region_transfers()}
+        ),
         "allocation/rules.json": _j(S.allocation_rules()),
         "focus/cost-export.csv": F.to_csv(F.generate()),
         "ai/requests.jsonl": "".join(json.dumps(r, sort_keys=True) + "\n" for r in S.ai_requests()),

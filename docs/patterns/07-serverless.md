@@ -46,7 +46,9 @@ Flex Consumption is priced with the tiered meters, so the monthly free grant in 
 def flex_monthly(executions: int, duration_s: float, memory_gb: float) -> float:
     book = default_book()
     gb_s = executions * duration_s * memory_gb
-    return book.tiered_cost("functions.flex.ondemand_gb_second", gb_s) + book.tiered_cost("functions.flex.ondemand_executions_10", executions / 10)
+    return book.tiered_cost("functions.flex.ondemand_gb_second", gb_s) + book.tiered_cost(
+        "functions.flex.ondemand_executions_10", executions / 10
+    )
 ```
 <!-- /code -->
 

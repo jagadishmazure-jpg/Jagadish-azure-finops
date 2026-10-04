@@ -33,7 +33,13 @@ def gate(baseline: Candidate, cand: Candidate, max_quality_drop_pts: float = 1.0
     if cand.safety_regressions:
         return Decision(cand.name, False, savings, delta, f"{cand.safety_regressions} safety regression(s)")
     if delta < -max_quality_drop_pts:
-        return Decision(cand.name, False, savings, delta, f"quality {delta:+.2f} pts exceeds the -{max_quality_drop_pts} pt budget")
+        return Decision(
+            cand.name,
+            False,
+            savings,
+            delta,
+            f"quality {delta:+.2f} pts exceeds the -{max_quality_drop_pts} pt budget",
+        )
     if savings <= 0:
         return Decision(cand.name, False, savings, delta, "no saving")
     return Decision(cand.name, True, savings, delta, "quality within budget")

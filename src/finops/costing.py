@@ -12,7 +12,10 @@ from finops import HOURS_PER_MONTH, SECONDS_PER_MONTH
 from finops.pricing import PriceBook, default_book, vm_key
 
 VM_SHAPES = {  # size: (vCPU, GiB)
-    "D2s_v5": (2, 8), "D4s_v5": (4, 16), "D8s_v5": (8, 32), "E4s_v5": (4, 32),
+    "D2s_v5": (2, 8),
+    "D4s_v5": (4, 16),
+    "D8s_v5": (8, 32),
+    "E4s_v5": (4, 32),
 }
 WS_SHAPES = {"WS1": (1, 3.5), "WS2": (2, 7.0), "WS3": (4, 14.0)}
 EP_SHAPES = {"EP1": (1, 3.5), "EP2": (2, 7.0), "EP3": (4, 14.0)}
@@ -35,16 +38,28 @@ def functions_premium_hourly(sku: str, book: PriceBook | None = None) -> float:
     return vcpu * book.price("functions.premium.vcpu_hour") + gib * book.price("functions.premium.gib_hour")
 
 
-def container_app_monthly(min_replicas: int, vcpu: float, gib: float, active_fraction: float,
-                          monthly_requests: int, book: PriceBook | None = None) -> float:
+def container_app_monthly(
+    min_replicas: int,
+    vcpu: float,
+    gib: float,
+    active_fraction: float,
+    monthly_requests: int,
+    book: PriceBook | None = None,
+) -> float:
     """Consumption-profile Container App. A warm replica bills the idle rate whenever it is not
     serving, and the active rate while serving. The per-subscription monthly free grant is ignored
     (conservative: real bills for tiny apps are lower)."""
     book = book or default_book()
     active_s = SECONDS_PER_MONTH * active_fraction * max(min_replicas, 1 if active_fraction else 0)
     idle_s = SECONDS_PER_MONTH * (1 - active_fraction) * min_replicas
-    active = active_s * (vcpu * book.price("containerapps.vcpu_active_second") + gib * book.price("containerapps.gib_active_second"))
-    idle = idle_s * (vcpu * book.price("containerapps.vcpu_idle_second") + gib * book.price("containerapps.gib_idle_second"))
+    active = active_s * (
+        vcpu * book.price("containerapps.vcpu_active_second")
+        + gib * book.price("containerapps.gib_active_second")
+    )
+    idle = idle_s * (
+        vcpu * book.price("containerapps.vcpu_idle_second")
+        + gib * book.price("containerapps.gib_idle_second")
+    )
     reqs = monthly_requests / 1e6 * book.price("containerapps.requests_million")
     return active + idle + reqs
 
@@ -75,7 +90,9 @@ def monthly_cost(r: dict[str, Any], book: PriceBook | None = None) -> float:
             return functions_premium_hourly(sku, book) * HOURS_PER_MONTH
         return 0.0
     if t.endswith("containerApps"):
-        return container_app_monthly(p["min_replicas"], p["vcpu"], p["gib"], p["active_fraction"], p["monthly_requests"], book)
+        return container_app_monthly(
+            p["min_replicas"], p["vcpu"], p["gib"], p["active_fraction"], p["monthly_requests"], book
+        )
     if t.endswith("disks"):
         return book.monthly(f"disk.{sku}")
     if t.endswith("publicIPAddresses"):

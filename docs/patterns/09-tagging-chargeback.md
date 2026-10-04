@@ -50,7 +50,11 @@ def compliance(rows: list[CostRow], required: list[str]) -> dict[str, Any]:
     total = sum(r.cost for r in rows)
     ok = sum(r.cost for r in rows if all(k in r.tags for k in required))
     missing = sorted({r.resource_name for r in rows if not all(k in r.tags for k in required)})
-    return {"tagged_cost_pct": round(100 * ok / total, 1), "untagged_resources": missing, "untagged_cost": round(total - ok, 2)}
+    return {
+        "tagged_cost_pct": round(100 * ok / total, 1),
+        "untagged_resources": missing,
+        "untagged_cost": round(total - ok, 2),
+    }
 ```
 <!-- /code -->
 
@@ -81,7 +85,11 @@ def showback(rows: list[CostRow], rules: dict[str, Any]) -> dict[str, dict[str, 
     out = {}
     for cc in sorted(direct):
         share = 0.0 if cc == "unallocated" else shared_pool * direct[cc] / base
-        out[cc] = {"direct": round(direct[cc], 2), "shared": round(share, 2), "total": round(direct[cc] + share, 2)}
+        out[cc] = {
+            "direct": round(direct[cc], 2),
+            "shared": round(share, 2),
+            "total": round(direct[cc] + share, 2),
+        }
     return out
 ```
 <!-- /code -->
@@ -91,7 +99,9 @@ straight-line forecast from the first 15 days:
 
 <!-- code: src/finops/patterns/p09_tagging_chargeback.py::budget_status -->
 ```python
-def budget_status(rows: list[CostRow], rules: dict[str, Any], day: int = FORECAST_DAY) -> list[dict[str, Any]]:
+def budget_status(
+    rows: list[CostRow], rules: dict[str, Any], day: int = FORECAST_DAY
+) -> list[dict[str, Any]]:
     """Budgets are checked against ALLOCATED cost (direct + shared share), the number a cost
     center is charged, using a straight-line forecast from the first ``day`` days."""
     days = sorted({r.day for r in rows})
@@ -102,8 +112,16 @@ def budget_status(rows: list[CostRow], rules: dict[str, Any], day: int = FORECAS
         mtd = {k: v["total"] for k, v in alloc.items()}.get(cc, 0.0)
         forecast = mtd / day * len(days)
         hit = [t for t in rules["alert_thresholds"] if forecast >= budget * t]
-        out.append({"cost_center": cc, "budget": budget, "mtd": round(mtd, 2), "forecast": round(forecast, 2),
-                    "forecast_pct": round(100 * forecast / budget, 1), "alerts": [f"{int(t * 100)}%" for t in hit]})
+        out.append(
+            {
+                "cost_center": cc,
+                "budget": budget,
+                "mtd": round(mtd, 2),
+                "forecast": round(forecast, 2),
+                "forecast_pct": round(100 * forecast / budget, 1),
+                "alerts": [f"{int(t * 100)}%" for t in hit],
+            }
+        )
     return out
 ```
 <!-- /code -->

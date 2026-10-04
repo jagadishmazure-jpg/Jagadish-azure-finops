@@ -23,8 +23,15 @@ def roi(uc: dict[str, Any], tasks: float, token_monthly: float) -> dict[str, Any
     r = (value - cost) / cost
     verdict = "scale" if r >= 1 else ("keep and optimize" if r >= 0 else "rework or retire")
     return {
-        "use_case": uc["use_case"], "tasks": round(tasks), "value": round(value, 2), "token_cost": round(token_monthly, 2),
-        "platform": uc["platform_monthly"], "amortized_build": round(amort, 2), "total_cost": round(cost, 2),
-        "roi_pct": round(100 * r, 1), "payback_months": round(uc["build_cost"] / margin, 1) if margin > 0 else None,
-        "cost_per_task": round(cost / tasks, 4) if tasks else None, "verdict": verdict,
+        "use_case": uc["use_case"],
+        "tasks": round(tasks),
+        "value": round(value, 2),
+        "token_cost": round(token_monthly, 2),
+        "platform": uc["platform_monthly"],
+        "amortized_build": round(amort, 2),
+        "total_cost": round(cost, 2),
+        "roi_pct": round(100 * r, 1),
+        "payback_months": round(uc["build_cost"] / margin, 1) if margin > 0 else None,
+        "cost_per_task": round(cost / tasks, 4) if tasks else None,
+        "verdict": verdict,
     }

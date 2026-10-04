@@ -46,7 +46,11 @@ def test_reservation_total_is_spread_over_term(book):
 def test_reservations_are_cheaper_than_payg(book):
     for size in ("D2s_v5", "D4s_v5", "D8s_v5", "E4s_v5"):
         payg = book.price(vm_key(size))
-        assert book.reservation_hourly(vm_key(size, offer="ri3y")) < book.reservation_hourly(vm_key(size, offer="ri1y")) < payg
+        assert (
+            book.reservation_hourly(vm_key(size, offer="ri3y"))
+            < book.reservation_hourly(vm_key(size, offer="ri1y"))
+            < payg
+        )
 
 
 def test_savings_plan_prices(book):
@@ -81,6 +85,22 @@ def test_spot_is_cheapest_vm_offer(book):
 
 def test_pricebook_reads_a_custom_file(tmp_path):
     p = tmp_path / "s.json"
-    p.write_text(json.dumps({"label": "x", "region": "r", "items": [
-        {"key": "k", "serviceName": "s", "productName": "p", "meterName": "m", "unitOfMeasure": "1 Hour", "tiers": [{"from_units": 0, "price": 2.0}]}]}))
+    p.write_text(
+        json.dumps(
+            {
+                "label": "x",
+                "region": "r",
+                "items": [
+                    {
+                        "key": "k",
+                        "serviceName": "s",
+                        "productName": "p",
+                        "meterName": "m",
+                        "unitOfMeasure": "1 Hour",
+                        "tiers": [{"from_units": 0, "price": 2.0}],
+                    }
+                ],
+            }
+        )
+    )
     assert PriceBook(p).monthly("k") == 1460

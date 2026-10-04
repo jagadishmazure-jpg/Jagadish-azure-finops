@@ -26,8 +26,11 @@ REDIS_SKU = "redis.standard.C1"  # Standard has a replica; Basic has no SLA
 
 def front_door_monthly(egress_gb: float, requests_10k: float) -> float:
     book = default_book()
-    return (book.price("frontdoor.standard.base_month") + book.tiered_cost("frontdoor.standard.egress_gb", egress_gb)
-            + book.tiered_cost("frontdoor.standard.requests_10k", requests_10k))
+    return (
+        book.price("frontdoor.standard.base_month")
+        + book.tiered_cost("frontdoor.standard.egress_gb", egress_gb)
+        + book.tiered_cost("frontdoor.standard.requests_10k", requests_10k)
+    )
 
 
 def analyze() -> PatternResult:
@@ -44,32 +47,82 @@ def analyze() -> PatternResult:
             new_n = max(2, math.ceil(n * (1 - ep["expected_hit_ratio"])))
             before = unit * n
             after = unit * new_n + book.monthly(REDIS_SKU)
-            res.findings.append(Finding(
-                PATTERN, plan["id"], ep["name"], f"Redis C1 cache-aside: {n} -> {new_n} {plan['sku']} instances",
-                before, after, confidence="medium", risk="low",
-                change={"op": "add-cache", "sku": "Standard C1", "origin_instances": new_n},
-                evidence={"hit_ratio": ep["expected_hit_ratio"], "redis_monthly": round(book.monthly(REDIS_SKU), 2)}, estimate=True,
-            ))
+            res.findings.append(
+                Finding(
+                    PATTERN,
+                    plan["id"],
+                    ep["name"],
+                    f"Redis C1 cache-aside: {n} -> {new_n} {plan['sku']} instances",
+                    before,
+                    after,
+                    confidence="medium",
+                    risk="low",
+                    change={"op": "add-cache", "sku": "Standard C1", "origin_instances": new_n},
+                    evidence={
+                        "hit_ratio": ep["expected_hit_ratio"],
+                        "redis_monthly": round(book.monthly(REDIS_SKU), 2),
+                    },
+                    estimate=True,
+                )
+            )
             continue
         fd = front_door_monthly(ep["egress_gb"], ep["requests_10k"])
         if fd >= origin_egress:
-            res.skipped.append((ep["name"], f"Front Door ${fd:,.2f}/mo would not beat origin egress ${origin_egress:,.2f}/mo"))
+            res.skipped.append(
+                (
+                    ep["name"],
+                    f"Front Door ${fd:,.2f}/mo would not beat origin egress ${origin_egress:,.2f}/mo",
+                )
+            )
             continue
-        res.findings.append(Finding(
-            PATTERN, inv[ep["origin"]]["id"], ep["name"], "serve through Front Door Standard (edge cache)",
-            origin_egress, fd, confidence="medium", risk="low",
-            change={"op": "front-door", "sku": "Standard_AzureFrontDoor", "caching": True, "compression": True},
-            evidence={"egress_gb": ep["egress_gb"], "requests_10k": ep["requests_10k"], "hit_ratio": ep["expected_hit_ratio"],
-                      "origin_offload_gb": round(ep["egress_gb"] * ep["expected_hit_ratio"])}, estimate=True,
-        ))
+        res.findings.append(
+            Finding(
+                PATTERN,
+                inv[ep["origin"]]["id"],
+                ep["name"],
+                "serve through Front Door Standard (edge cache)",
+                origin_egress,
+                fd,
+                confidence="medium",
+                risk="low",
+                change={
+                    "op": "front-door",
+                    "sku": "Standard_AzureFrontDoor",
+                    "caching": True,
+                    "compression": True,
+                },
+                evidence={
+                    "egress_gb": ep["egress_gb"],
+                    "requests_10k": ep["requests_10k"],
+                    "hit_ratio": ep["expected_hit_ratio"],
+                    "origin_offload_gb": round(ep["egress_gb"] * ep["expected_hit_ratio"]),
+                },
+                estimate=True,
+            )
+        )
     price = book.price("bandwidth.inter_region_gb")
     for x in reg["cross_region"]:
         before = x["gb_per_month"] * price
         after = x["gb_per_month"] * x["changed_fraction"] * price
-        res.findings.append(Finding(
-            PATTERN, f"transfer:{x['name']}", x["name"], f"incremental copy ({x['changed_fraction']:.0%} changed) instead of full",
-            before, after, confidence="high", risk="low", change={"op": "replication-mode", "to": "incremental"},
-            evidence={"gb_full": x["gb_per_month"], "gb_incremental": round(x["gb_per_month"] * x["changed_fraction"])}, estimate=True,
-        ))
-    res.notes.append("Front Door saving is mostly origin offload and latency; on egress alone the edge price is close to origin egress")
+        res.findings.append(
+            Finding(
+                PATTERN,
+                f"transfer:{x['name']}",
+                x["name"],
+                f"incremental copy ({x['changed_fraction']:.0%} changed) instead of full",
+                before,
+                after,
+                confidence="high",
+                risk="low",
+                change={"op": "replication-mode", "to": "incremental"},
+                evidence={
+                    "gb_full": x["gb_per_month"],
+                    "gb_incremental": round(x["gb_per_month"] * x["changed_fraction"]),
+                },
+                estimate=True,
+            )
+        )
+    res.notes.append(
+        "Front Door saving is mostly origin offload and latency; on egress alone the edge price is close to origin egress"
+    )
     return res

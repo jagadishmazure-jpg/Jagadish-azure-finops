@@ -79,27 +79,65 @@ def analyze(max_term_years: int = MAX_TERM_YEARS) -> PatternResult:
     table = []
     for o in options(book):
         lv, cost = best_level(usage, o.hourly, payg)
-        table.append({"option": o.name, "term_years": o.term_years, "hourly": round(o.hourly, 5),
-                      "discount_pct": round(100 * (1 - o.hourly / payg), 1), "level": lv,
-                      "analytic_level": analytic_level(usage, o.hourly, payg), "monthly": round(cost * scale, 2),
-                      "breakeven_utilization": round(o.hourly / payg, 3), "breakeven_months": breakeven_months(o.hourly, payg, o.term_years),
-                      "flexible": o.flexible})
+        table.append(
+            {
+                "option": o.name,
+                "term_years": o.term_years,
+                "hourly": round(o.hourly, 5),
+                "discount_pct": round(100 * (1 - o.hourly / payg), 1),
+                "level": lv,
+                "analytic_level": analytic_level(usage, o.hourly, payg),
+                "monthly": round(cost * scale, 2),
+                "breakeven_utilization": round(o.hourly / payg, 3),
+                "breakeven_months": breakeven_months(o.hourly, payg, o.term_years),
+                "flexible": o.flexible,
+            }
+        )
     allowed = [t for t in table if t["term_years"] <= max_term_years]
     pick = min(allowed, key=lambda t: (t["monthly"], not t["flexible"]))
-    res = PatternResult(PATTERN, "Reservations and savings plans for the steady baseline", [], extra={"options": table, "usage_min": min(usage),
-                        "usage_max": max(usage), "usage_avg": round(sum(usage) / len(usage), 2)})
-    res.findings.append(Finding(
-        PATTERN, "scope:/subscriptions/lk-prod", "D-series fleet (lk-prod)",
-        f"buy {pick['option']} for {pick['level']} x {UNIT} units", base_cost, pick["monthly"],
-        confidence="high", risk="medium" if pick["term_years"] > 1 else "low",
-        change={"op": "purchase-commitment", "type": pick["option"], "quantity": pick["level"], "sku": UNIT, "scope": "shared"},
-        evidence={"usage_min": min(usage), "usage_avg": res.extra["usage_avg"], "usage_max": max(usage), "pick": pick},
-        reversible=False,
-    ))
+    res = PatternResult(
+        PATTERN,
+        "Reservations and savings plans for the steady baseline",
+        [],
+        extra={
+            "options": table,
+            "usage_min": min(usage),
+            "usage_max": max(usage),
+            "usage_avg": round(sum(usage) / len(usage), 2),
+        },
+    )
+    res.findings.append(
+        Finding(
+            PATTERN,
+            "scope:/subscriptions/lk-prod",
+            "D-series fleet (lk-prod)",
+            f"buy {pick['option']} for {pick['level']} x {UNIT} units",
+            base_cost,
+            pick["monthly"],
+            confidence="high",
+            risk="medium" if pick["term_years"] > 1 else "low",
+            change={
+                "op": "purchase-commitment",
+                "type": pick["option"],
+                "quantity": pick["level"],
+                "sku": UNIT,
+                "scope": "shared",
+            },
+            evidence={
+                "usage_min": min(usage),
+                "usage_avg": res.extra["usage_avg"],
+                "usage_max": max(usage),
+                "pick": pick,
+            },
+            reversible=False,
+        )
+    )
     for t in table:
         res.notes.append(
             f"{t['option']:<16} {t['discount_pct']:>5}% off  commit {t['level']:>2} units  month {money(t['monthly']):>10}  "
             f"break-even use {t['breakeven_utilization']:.0%}  break-even {t['breakeven_months']} months"
         )
-    res.notes.append(f"policy max term {max_term_years}y -> {pick['option']}; usage min/avg/max {min(usage)}/{res.extra['usage_avg']}/{max(usage)} units")
+    res.notes.append(
+        f"policy max term {max_term_years}y -> {pick['option']}; usage min/avg/max {min(usage)}/{res.extra['usage_avg']}/{max(usage)} units"
+    )
     return res

@@ -14,7 +14,11 @@ def test_core_rules():
 
 
 def test_greedy_assignment_respects_pool():
-    cands = [{"name": "a", "cores": 8, "saving": 100}, {"name": "b", "cores": 8, "saving": 50}, {"name": "c", "cores": 8, "saving": 80}]
+    cands = [
+        {"name": "a", "cores": 8, "saving": 100},
+        {"name": "b", "cores": 8, "saving": 50},
+        {"name": "c", "cores": 8, "saving": 80},
+    ]
     covered, left = P.assign(cands, 16)
     assert [c["name"] for c in covered] == ["a", "c"] and [c["name"] for c in left] == ["b"]
 

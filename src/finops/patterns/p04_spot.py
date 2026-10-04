@@ -35,7 +35,9 @@ class SimResult:
     wall_hours: float
 
 
-def simulate_run(rng: random.Random, nodes: int, hours: float, checkpoint_min: float, rate: float = EVICTION_RATE_PER_HOUR) -> SimResult:
+def simulate_run(
+    rng: random.Random, nodes: int, hours: float, checkpoint_min: float, rate: float = EVICTION_RATE_PER_HOUR
+) -> SimResult:
     """Replay one run. Each node owns 1/nodes of the work. On eviction the node loses the work
     since its last checkpoint (all of it if checkpoint_min == 0) and pays a restart delay."""
     step = 1 / 60  # minute resolution
@@ -59,10 +61,17 @@ def simulate_run(rng: random.Random, nodes: int, hours: float, checkpoint_min: f
     return SimResult(total_hours, evictions, wall)
 
 
-def evaluate(job: dict[str, Any], rate: float = EVICTION_RATE_PER_HOUR, checkpoint: bool = True) -> dict[str, Any]:
+def evaluate(
+    job: dict[str, Any], rate: float = EVICTION_RATE_PER_HOUR, checkpoint: bool = True
+) -> dict[str, Any]:
     book = default_book()
     rng = random.Random(SEED)
-    sims = [simulate_run(rng, job["nodes"], job["hours_per_run"], job["checkpoint_minutes"] if checkpoint else 0, rate) for _ in range(SIMULATED_RUNS)]
+    sims = [
+        simulate_run(
+            rng, job["nodes"], job["hours_per_run"], job["checkpoint_minutes"] if checkpoint else 0, rate
+        )
+        for _ in range(SIMULATED_RUNS)
+    ]
     payg = book.price(vm_key(job["size"]))
     spot = book.price(vm_key(job["size"], offer="spot"))
     mean_hours = sum(s.node_hours for s in sims) / len(sims)
@@ -82,25 +91,57 @@ def analyze() -> PatternResult:
     res = PatternResult(PATTERN, "Spot capacity for interruptible batch work", [])
     for job in load_json("batch/jobs.json"):
         if not job["interruptible"]:
-            res.skipped.append((job["name"], "not interruptible (financial close must finish in one pass); stays on pay-as-you-go"))
+            res.skipped.append(
+                (
+                    job["name"],
+                    "not interruptible (financial close must finish in one pass); stays on pay-as-you-go",
+                )
+            )
             continue
         ev = evaluate(job)
         no_ckpt = evaluate(job, checkpoint=False)
-        ev["without_checkpoint"] = {"spot_monthly": round(no_ckpt["spot_monthly"], 2), "wall_p95_hours": no_ckpt["wall_p95_hours"], "rework_pct": no_ckpt["rework_pct"]}
+        ev["without_checkpoint"] = {
+            "spot_monthly": round(no_ckpt["spot_monthly"], 2),
+            "wall_p95_hours": no_ckpt["wall_p95_hours"],
+            "rework_pct": no_ckpt["rework_pct"],
+        }
         if ev["wall_p95_hours"] > job["deadline_hours"]:
-            res.skipped.append((job["name"], f"p95 completion {ev['wall_p95_hours']} h misses the {job['deadline_hours']} h deadline on Spot"))
+            res.skipped.append(
+                (
+                    job["name"],
+                    f"p95 completion {ev['wall_p95_hours']} h misses the {job['deadline_hours']} h deadline on Spot",
+                )
+            )
             continue
-        res.findings.append(Finding(
-            PATTERN, f"batch-lk-prod/pools/{job['name']}", f"pool:{job['name']}",
-            f"Spot nodes, checkpoint every {job['checkpoint_minutes']} min ({job['nodes']}x {job['size']})",
-            ev["payg_monthly"], ev["spot_monthly"], confidence="medium", risk="low",
-            change={"op": "pool-priority", "to": "spot", "fallback": "dedicated", "eviction_policy": "Delete", "checkpoint_minutes": job["checkpoint_minutes"]},
-            evidence=ev, estimate=True,
-        ))
-    res.notes.append(f"ASSUMPTION eviction rate {EVICTION_RATE_PER_HOUR:.0%}/node-hour, restart {RESTART_MINUTES:.0f} min, {SIMULATED_RUNS} simulated runs per job (seed {SEED})")
+        res.findings.append(
+            Finding(
+                PATTERN,
+                f"batch-lk-prod/pools/{job['name']}",
+                f"pool:{job['name']}",
+                f"Spot nodes, checkpoint every {job['checkpoint_minutes']} min ({job['nodes']}x {job['size']})",
+                ev["payg_monthly"],
+                ev["spot_monthly"],
+                confidence="medium",
+                risk="low",
+                change={
+                    "op": "pool-priority",
+                    "to": "spot",
+                    "fallback": "dedicated",
+                    "eviction_policy": "Delete",
+                    "checkpoint_minutes": job["checkpoint_minutes"],
+                },
+                evidence=ev,
+                estimate=True,
+            )
+        )
+    res.notes.append(
+        f"ASSUMPTION eviction rate {EVICTION_RATE_PER_HOUR:.0%}/node-hour, restart {RESTART_MINUTES:.0f} min, {SIMULATED_RUNS} simulated runs per job (seed {SEED})"
+    )
     for f in res.findings:
         w = f.evidence["without_checkpoint"]
-        res.notes.append(f"{f.resource_name}: rework {f.evidence['rework_pct']}% with checkpoints vs {w['rework_pct']}% without; p95 wall {f.evidence['wall_p95_hours']} h vs {w['wall_p95_hours']} h")
+        res.notes.append(
+            f"{f.resource_name}: rework {f.evidence['rework_pct']}% with checkpoints vs {w['rework_pct']}% without; p95 wall {f.evidence['wall_p95_hours']} h vs {w['wall_p95_hours']} h"
+        )
     return res
 
 
@@ -123,8 +164,14 @@ class Preempted(Exception):
     pass
 
 
-def run_resumable(job: str, steps: list[Callable[[Any], Any]], store: CheckpointStore, preempt_at: set[int] | None = None,
-                  checkpoint_every: int = 1, initial: Any = 0) -> Any:
+def run_resumable(
+    job: str,
+    steps: list[Callable[[Any], Any]],
+    store: CheckpointStore,
+    preempt_at: set[int] | None = None,
+    checkpoint_every: int = 1,
+    initial: Any = 0,
+) -> Any:
     """Run ``steps`` in order, resuming from the store. ``preempt_at`` simulates an Azure Scheduled
     Events ``Preempt`` notice arriving before the given step: the worker checkpoints and exits."""
     start, state = store.load(job)
@@ -142,7 +189,13 @@ def run_resumable(job: str, steps: list[Callable[[Any], Any]], store: Checkpoint
     return state
 
 
-def run_until_done(job: str, steps: list[Callable[[Any], Any]], store: CheckpointStore, preempt_at: set[int], max_attempts: int = 10) -> tuple[Any, int]:
+def run_until_done(
+    job: str,
+    steps: list[Callable[[Any], Any]],
+    store: CheckpointStore,
+    preempt_at: set[int],
+    max_attempts: int = 10,
+) -> tuple[Any, int]:
     for attempt in range(1, max_attempts + 1):
         try:
             return run_resumable(job, steps, store, preempt_at), attempt

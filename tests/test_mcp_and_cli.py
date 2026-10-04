@@ -26,7 +26,15 @@ def fresh_state(monkeypatch):
 async def test_tools_are_listed_with_read_only_hints():
     async with Client(M.server) as c:
         tools = {t.name: t for t in (await c.list_tools()).tools}
-    assert set(tools) == {"estate_summary", "list_findings", "explain_finding", "draft_change_plan", "plan_status", "execute_plan", "ai_cost_summary"}
+    assert set(tools) == {
+        "estate_summary",
+        "list_findings",
+        "explain_finding",
+        "draft_change_plan",
+        "plan_status",
+        "execute_plan",
+        "ai_cost_summary",
+    }
     assert "approve" not in " ".join(tools)
     assert all(t.annotations.read_only_hint for t in tools.values())
 
@@ -50,16 +58,25 @@ async def test_explain_points_to_the_doc():
 
 async def test_execute_refused_until_humans_approve():
     async with Client(M.server) as c:
-        ids = [x["id"] for x in data(await c.call_tool("list_findings", {"pattern": "p08", "min_savings": 100}))]
+        ids = [
+            x["id"] for x in data(await c.call_tool("list_findings", {"pattern": "p08", "min_savings": 100}))
+        ]
         plan = data(await c.call_tool("draft_change_plan", {"finding_ids": ids}))
         refused = data(await c.call_tool("execute_plan", {"plan_id": plan["plan_id"]}))
         p = M.STATE.plans[plan["plan_id"]]
-        M.STATE.approvals[p.plan_id] = [approve(p, "alice", "resource-owner", 0), approve(p, "bob", "finops-approver", 0)]
+        M.STATE.approvals[p.plan_id] = [
+            approve(p, "alice", "resource-owner", 0),
+            approve(p, "bob", "finops-approver", 0),
+        ]
         status = data(await c.call_tool("plan_status", {"plan_id": plan["plan_id"]}))
         done = data(await c.call_tool("execute_plan", {"plan_id": plan["plan_id"]}))
     assert plan["approvals_required"] == 2 and "refused" in refused and refused["executed"] is False
     assert status["problems"] == []
-    assert done["dry_run"] is True and done["executed"] is False and all(x.startswith("[DRY-RUN]") for x in done["commands"])
+    assert (
+        done["dry_run"] is True
+        and done["executed"] is False
+        and all(x.startswith("[DRY-RUN]") for x in done["commands"])
+    )
     assert M.STATE.audit.verify()
 
 
@@ -73,7 +90,11 @@ async def test_unknown_ids_are_errors():
 async def test_ai_cost_summary_tool():
     async with Client(M.server) as c:
         s = data(await c.call_tool("ai_cost_summary", {}))
-    assert s["monthly_cost"] > 0 and any(o["ship"] for o in s["optimizations"]) and any(not o["ship"] for o in s["optimizations"])
+    assert (
+        s["monthly_cost"] > 0
+        and any(o["ship"] for o in s["optimizations"])
+        and any(not o["ship"] for o in s["optimizations"])
+    )
 
 
 def test_cli_approval_roundtrip(tmp_path, monkeypatch, capsys):
@@ -81,7 +102,20 @@ def test_cli_approval_roundtrip(tmp_path, monkeypatch, capsys):
     M.STATE.persist = True
     fid = M.estate().findings[0].id
     plan = M.draft_change_plan([fid])
-    assert cli.main(["approve", "--plan", plan["plan_id"], "--approver", "carol@larkspur.example", "--role", "finops-approver"]) == 0
+    assert (
+        cli.main(
+            [
+                "approve",
+                "--plan",
+                plan["plan_id"],
+                "--approver",
+                "carol@larkspur.example",
+                "--role",
+                "finops-approver",
+            ]
+        )
+        == 0
+    )
     assert len(M.STATE.approvals_for(plan["plan_id"])) == 1
     assert "approved" in capsys.readouterr().out
 
@@ -108,3 +142,26 @@ def test_case_study_has_no_real_identifiers():
 
     text = json.dumps(load_json("case-study/inventory.json"))
     assert "cs-practice" in text and "acloud" not in text and "myagent" not in text
+
+
+def test_cli_estate_and_evidence(capsys):
+    assert cli.main(["estate", "--top", "2"]) == 0
+    out = capsys.readouterr().out
+    assert "TOTAL proposed savings $6,159.31/mo" in out
+    assert cli.main(["pattern", "p05", "--evidence"]) == 0
+    out = capsys.readouterr().out
+    assert "monthly_by_tier" in out and "generated policy:" in out and "tierToArchive" in out
+
+
+def test_cli_unknown_pattern_returns_2(capsys):
+    assert cli.main(["pattern", "p99"]) == 2
+
+
+def test_mcp_demo_shows_refusal_then_dry_run():
+    from finops.agent.demo import run as demo
+
+    out = demo()
+    assert "refused: needs 2 distinct approver(s), has 0" in out
+    assert "needs 2 distinct approver(s), has 1" in out
+    assert "[DRY-RUN] az vm deallocate" in out
+    assert "chain verified=True" in out

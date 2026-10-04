@@ -9,8 +9,20 @@ from finops.ai.report import analyze, report
 from finops.ai.token_cost import attribute, cached_prefix_tokens, reconcile, request_cost
 from finops.datasets import load_ai_requests, load_json
 
-REQ = {"request_id": "r1", "tenant": "t", "agent": "eta-assistant", "use_case": "u", "prompt": "where is shipment 1001", "day": 1,
-       "system_prefix_tokens": 1280, "prompt_tokens": 1500, "completion_tokens": 100, "label": "simple", "model": "gpt-4o", "weight": 1}
+REQ = {
+    "request_id": "r1",
+    "tenant": "t",
+    "agent": "eta-assistant",
+    "use_case": "u",
+    "prompt": "where is shipment 1001",
+    "day": 1,
+    "system_prefix_tokens": 1280,
+    "prompt_tokens": 1500,
+    "completion_tokens": 100,
+    "label": "simple",
+    "model": "gpt-4o",
+    "weight": 1,
+}
 
 
 @pytest.fixture(scope="module")
@@ -29,7 +41,11 @@ def test_prompt_cache_bills_prefix_at_cached_rate():
 
 
 def test_prompt_cache_threshold():
-    assert cached_prefix_tokens(1000) == 0 and cached_prefix_tokens(1100) == 1024 and cached_prefix_tokens(1280) == 1280
+    assert (
+        cached_prefix_tokens(1000) == 0
+        and cached_prefix_tokens(1100) == 1024
+        and cached_prefix_tokens(1280) == 1280
+    )
 
 
 def test_attribution_reconciles_to_the_bill(a):
@@ -115,8 +131,14 @@ def test_gate_decisions_on_real_candidates(a):
 
 def test_budget_guard_degrades_then_blocks():
     reqs = [{**REQ, "request_id": f"r{i}", "day": 1 + i // 100, "weight": 100} for i in range(300)]
-    cfg = {"tenant_monthly_usd": {"t": 10.0}, "agent_monthly_usd": {"eta-assistant": 100.0}, "soft_alert": 0.8, "degrade_at": 1.0,
-           "block_at": 1.2, "critical_agents": []}
+    cfg = {
+        "tenant_monthly_usd": {"t": 10.0},
+        "agent_monthly_usd": {"eta-assistant": 100.0},
+        "soft_alert": 0.8,
+        "degrade_at": 1.0,
+        "block_at": 1.2,
+        "critical_agents": [],
+    }
     g = enforce(reqs, cfg)
     assert g["counts"]["degraded"] > 0 and g["counts"]["blocked"] > 0
     assert any("120%" in x for x in g["alerts"])
@@ -124,8 +146,14 @@ def test_budget_guard_degrades_then_blocks():
 
 def test_critical_agents_are_never_blocked():
     reqs = [{**REQ, "agent": "invoice-triage", "request_id": f"r{i}", "weight": 1000} for i in range(200)]
-    cfg = {"tenant_monthly_usd": {"t": 1.0}, "agent_monthly_usd": {"invoice-triage": 1.0}, "soft_alert": 0.8, "degrade_at": 1.0,
-           "block_at": 1.2, "critical_agents": ["invoice-triage"]}
+    cfg = {
+        "tenant_monthly_usd": {"t": 1.0},
+        "agent_monthly_usd": {"invoice-triage": 1.0},
+        "soft_alert": 0.8,
+        "degrade_at": 1.0,
+        "block_at": 1.2,
+        "critical_agents": ["invoice-triage"],
+    }
     g = enforce(reqs, cfg)
     assert g["counts"]["blocked"] == 0 and g["counts"]["critical_over_budget"] > 0
 
@@ -145,10 +173,22 @@ def test_ptu_does_not_pay_at_this_volume(a):
 
 
 def test_roi_math():
-    uc = {"use_case": "x", "minutes_saved_per_task": 6, "loaded_rate_per_hour": 60, "adoption": 0.5, "build_cost": 1200,
-          "amortize_months": 12, "platform_monthly": 50}
+    uc = {
+        "use_case": "x",
+        "minutes_saved_per_task": 6,
+        "loaded_rate_per_hour": 60,
+        "adoption": 0.5,
+        "build_cost": 1200,
+        "amortize_months": 12,
+        "platform_monthly": 50,
+    }
     r = roi.roi(uc, 1000, 50)
-    assert r["value"] == 3000 and r["total_cost"] == 200 and r["roi_pct"] == 1400.0 and r["payback_months"] == 0.4
+    assert (
+        r["value"] == 3000
+        and r["total_cost"] == 200
+        and r["roi_pct"] == 1400.0
+        and r["payback_months"] == 0.4
+    )
 
 
 def test_roi_flags_a_use_case_to_rework(a):

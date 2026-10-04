@@ -46,7 +46,9 @@ The App Service rule is the formula autoscale enforces, written down so it can b
 
 <!-- code: src/finops/patterns/p02_autoscale.py::instances_needed -->
 ```python
-def instances_needed(rps: float, per_instance: float, target: float = APP_TARGET, lo: int = APP_MIN, hi: int = APP_MAX) -> int:
+def instances_needed(
+    rps: float, per_instance: float, target: float = APP_TARGET, lo: int = APP_MIN, hi: int = APP_MAX
+) -> int:
     return min(hi, max(lo, math.ceil(rps / (per_instance * target))))
 ```
 <!-- /code -->
@@ -75,16 +77,28 @@ is not serving and the active rate when it is.
 
 <!-- code: src/finops/costing.py::container_app_monthly -->
 ```python
-def container_app_monthly(min_replicas: int, vcpu: float, gib: float, active_fraction: float,
-                          monthly_requests: int, book: PriceBook | None = None) -> float:
+def container_app_monthly(
+    min_replicas: int,
+    vcpu: float,
+    gib: float,
+    active_fraction: float,
+    monthly_requests: int,
+    book: PriceBook | None = None,
+) -> float:
     """Consumption-profile Container App. A warm replica bills the idle rate whenever it is not
     serving, and the active rate while serving. The per-subscription monthly free grant is ignored
     (conservative: real bills for tiny apps are lower)."""
     book = book or default_book()
     active_s = SECONDS_PER_MONTH * active_fraction * max(min_replicas, 1 if active_fraction else 0)
     idle_s = SECONDS_PER_MONTH * (1 - active_fraction) * min_replicas
-    active = active_s * (vcpu * book.price("containerapps.vcpu_active_second") + gib * book.price("containerapps.gib_active_second"))
-    idle = idle_s * (vcpu * book.price("containerapps.vcpu_idle_second") + gib * book.price("containerapps.gib_idle_second"))
+    active = active_s * (
+        vcpu * book.price("containerapps.vcpu_active_second")
+        + gib * book.price("containerapps.gib_active_second")
+    )
+    idle = idle_s * (
+        vcpu * book.price("containerapps.vcpu_idle_second")
+        + gib * book.price("containerapps.gib_idle_second")
+    )
     reqs = monthly_requests / 1e6 * book.price("containerapps.requests_million")
     return active + idle + reqs
 ```

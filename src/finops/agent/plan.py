@@ -99,8 +99,11 @@ class ChangePlan:
         return round(sum(s.savings_monthly for s in self.steps), 2)
 
     def content(self) -> dict[str, Any]:
-        return {"plan_id": self.plan_id, "requested_by": self.requested_by,
-                "steps": [s.__dict__ for s in self.steps]}
+        return {
+            "plan_id": self.plan_id,
+            "requested_by": self.requested_by,
+            "steps": [s.__dict__ for s in self.steps],
+        }
 
     @property
     def digest(self) -> str:
@@ -112,7 +115,17 @@ def plan_from_content(content: dict[str, Any]) -> ChangePlan:
 
 
 def build_plan(findings: list[Finding], requested_by: str = "finops-agent") -> ChangePlan:
-    steps = [Step(f.id, f.resource_name, f.action, az_command(f), ROLLBACK.get(f.change.get("op", ""), "revert the IaC change"),
-                  f.reversible, f.savings_monthly) for f in findings]
+    steps = [
+        Step(
+            f.id,
+            f.resource_name,
+            f.action,
+            az_command(f),
+            ROLLBACK.get(f.change.get("op", ""), "revert the IaC change"),
+            f.reversible,
+            f.savings_monthly,
+        )
+        for f in findings
+    ]
     pid = "plan-" + hashlib.sha256("|".join(s.finding_id for s in steps).encode()).hexdigest()[:10]
     return ChangePlan(pid, requested_by, steps)

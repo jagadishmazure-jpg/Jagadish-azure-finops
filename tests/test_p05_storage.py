@@ -1,7 +1,7 @@
 import pytest
+from tests.conftest import find
 
 from finops.patterns import p05_storage_tiering as P
-from tests.conftest import find
 
 
 @pytest.fixture(scope="module")

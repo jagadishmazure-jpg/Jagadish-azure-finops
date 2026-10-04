@@ -27,7 +27,9 @@ FLEX_COLD_START_S = 3  # typical worst case without always-ready instances (seco
 def flex_monthly(executions: int, duration_s: float, memory_gb: float) -> float:
     book = default_book()
     gb_s = executions * duration_s * memory_gb
-    return book.tiered_cost("functions.flex.ondemand_gb_second", gb_s) + book.tiered_cost("functions.flex.ondemand_executions_10", executions / 10)
+    return book.tiered_cost("functions.flex.ondemand_gb_second", gb_s) + book.tiered_cost(
+        "functions.flex.ondemand_executions_10", executions / 10
+    )
 
 
 def logic_consumption_monthly(runs: int, actions_per_run: int) -> float:
@@ -54,7 +56,10 @@ def analyze() -> PatternResult:
         if p.get("kind") == "functionapp":
             after = flex_monthly(p["monthly_executions"], p["avg_duration_s"], p["memory_gb"])
             target = "Functions Flex Consumption"
-            ev = {"executions": p["monthly_executions"], "gb_seconds": p["monthly_executions"] * p["avg_duration_s"] * p["memory_gb"]}
+            ev = {
+                "executions": p["monthly_executions"],
+                "gb_seconds": p["monthly_executions"] * p["avg_duration_s"] * p["memory_gb"],
+            }
         elif p.get("kind") == "workflowapp":
             after = logic_consumption_monthly(p["monthly_runs"], p["actions_per_run"])
             target = "Logic Apps Consumption"
@@ -63,14 +68,31 @@ def analyze() -> PatternResult:
             continue
         ev.update(always_on_monthly=round(before, 2), consumption_monthly=round(after, 2))
         if after >= before:
-            res.skipped.append((r["name"], f"consumption would cost ${after:,.2f}/mo vs ${before:,.2f}/mo on {r['sku']}; keep the plan"))
+            res.skipped.append(
+                (
+                    r["name"],
+                    f"consumption would cost ${after:,.2f}/mo vs ${before:,.2f}/mo on {r['sku']}; keep the plan",
+                )
+            )
             continue
         if b := blockers(p):
             res.skipped.append((r["name"], "blocked: " + ", ".join(b)))
             continue
-        res.findings.append(Finding(
-            PATTERN, r["id"], r["name"], f"{r['sku']} plan -> {target}", before, after, confidence="high", risk="low",
-            change={"op": "migrate-hosting", "to": target}, evidence=ev,
-        ))
-    res.notes.append("Flex price includes the monthly free grant shown in the price list (first 100,000 GB-s and 250,000 executions)")
+        res.findings.append(
+            Finding(
+                PATTERN,
+                r["id"],
+                r["name"],
+                f"{r['sku']} plan -> {target}",
+                before,
+                after,
+                confidence="high",
+                risk="low",
+                change={"op": "migrate-hosting", "to": target},
+                evidence=ev,
+            )
+        )
+    res.notes.append(
+        "Flex price includes the monthly free grant shown in the price list (first 100,000 GB-s and 250,000 executions)"
+    )
     return res

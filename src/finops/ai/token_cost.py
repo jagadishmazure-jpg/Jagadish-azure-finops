@@ -24,7 +24,9 @@ def cached_prefix_tokens(prefix: int) -> int:
     return prefix // PROMPT_CACHE_BLOCK * PROMPT_CACHE_BLOCK
 
 
-def request_cost(req: dict[str, Any], model: str | None = None, prompt_cache: bool = False, book: PriceBook | None = None) -> float:
+def request_cost(
+    req: dict[str, Any], model: str | None = None, prompt_cache: bool = False, book: PriceBook | None = None
+) -> float:
     """List cost of one call (unweighted). ``prompt_cache`` bills the shared prefix at the cached
     input rate where the snapshot has one (gpt-4o); other models fall back to the input rate."""
     book = book or default_book()
@@ -38,7 +40,11 @@ def request_cost(req: dict[str, Any], model: str | None = None, prompt_cache: bo
 
 def attribute(requests: list[dict[str, Any]], model_for=None, prompt_cache: bool = False) -> dict[str, Any]:
     """Weighted monthly cost by tenant, agent and use case. ``model_for(req)`` overrides the model."""
-    by: dict[str, dict[str, float]] = {"tenant": defaultdict(float), "agent": defaultdict(float), "use_case": defaultdict(float)}
+    by: dict[str, dict[str, float]] = {
+        "tenant": defaultdict(float),
+        "agent": defaultdict(float),
+        "use_case": defaultdict(float),
+    }
     costs = []
     total = 0.0
     for q in requests:
@@ -62,5 +68,9 @@ def attribute(requests: list[dict[str, Any]], model_for=None, prompt_cache: bool
 
 def reconcile(attributed_total: float, billed_total: float, tolerance: float = 0.01) -> dict[str, Any]:
     gap = round(attributed_total - billed_total, 2) + 0.0  # + 0.0 turns -0.0 into 0.0
-    return {"attributed": round(attributed_total, 2), "billed": round(billed_total, 2), "gap": round(gap, 2),
-            "ok": abs(gap) <= tolerance * max(billed_total, 1e-9)}
+    return {
+        "attributed": round(attributed_total, 2),
+        "billed": round(billed_total, 2),
+        "gap": round(gap, 2),
+        "ok": abs(gap) <= tolerance * max(billed_total, 1e-9),
+    }

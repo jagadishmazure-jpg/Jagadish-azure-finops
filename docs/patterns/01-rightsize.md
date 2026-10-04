@@ -47,7 +47,13 @@ The thresholds live in one place, so a reviewer can argue with numbers instead o
 
 <!-- code: src/finops/patterns/p01_rightsize.py::RULE -->
 ```python
-RULE = {"min_hours": 14 * 24, "cpu_p95_max": 40.0, "mem_p95_max": 50.0, "target_cpu_p95": 65.0, "target_mem_p95": 75.0}
+RULE = {
+    "min_hours": 14 * 24,
+    "cpu_p95_max": 40.0,
+    "mem_p95_max": 50.0,
+    "target_cpu_p95": 65.0,
+    "target_mem_p95": 75.0,
+}
 ```
 <!-- /code -->
 
@@ -56,7 +62,9 @@ The recommender walks down the size ladder, scaling the observed p95 by the capa
 
 <!-- code: src/finops/patterns/p01_rightsize.py::recommend -->
 ```python
-def recommend(size: str, ladder: list[str], shapes: dict, cpu: list[float], mem: list[float]) -> tuple[str, dict]:
+def recommend(
+    size: str, ladder: list[str], shapes: dict, cpu: list[float], mem: list[float]
+) -> tuple[str, dict]:
     """Return (target size, evidence). Target == size means no change."""
     p95c, p95m, peak = percentile(cpu, 95), percentile(mem, 95), max(cpu)
     ev = {"cpu_p95": p95c, "mem_p95": p95m, "cpu_peak": peak, "hours": len(cpu)}
@@ -76,11 +84,18 @@ def recommend(size: str, ladder: list[str], shapes: dict, cpu: list[float], mem:
             break
         target, idx = cand, idx - 1
     if target == size:
-        ev["reason"] = "already the smallest size that keeps projected p95 within target" if idx else "smallest size in the family ladder"
+        ev["reason"] = (
+            "already the smallest size that keeps projected p95 within target"
+            if idx
+            else "smallest size in the family ladder"
+        )
         return size, ev
     rc = shapes[size][0] / shapes[target][0]
-    ev.update(projected_cpu_p95=round(p95c * rc, 1), projected_mem_p95=round(p95m * shapes[size][1] / shapes[target][1], 1),
-              projected_cpu_peak=round(peak * rc, 1))
+    ev.update(
+        projected_cpu_p95=round(p95c * rc, 1),
+        projected_mem_p95=round(p95m * shapes[size][1] / shapes[target][1], 1),
+        projected_cpu_peak=round(peak * rc, 1),
+    )
     return target, ev
 ```
 <!-- /code -->

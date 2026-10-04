@@ -1,8 +1,8 @@
 import pytest
+from tests.conftest import find
 
 from finops.costing import VM_SHAPES
 from finops.patterns import p01_rightsize as P
-from tests.conftest import find
 
 
 @pytest.fixture(scope="module")

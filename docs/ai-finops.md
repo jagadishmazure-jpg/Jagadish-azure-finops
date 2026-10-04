@@ -75,7 +75,9 @@ attributes in Application Insights). Cost is computed per request from the price
 
 <!-- code: src/finops/ai/token_cost.py::request_cost -->
 ```python
-def request_cost(req: dict[str, Any], model: str | None = None, prompt_cache: bool = False, book: PriceBook | None = None) -> float:
+def request_cost(
+    req: dict[str, Any], model: str | None = None, prompt_cache: bool = False, book: PriceBook | None = None
+) -> float:
     """List cost of one call (unweighted). ``prompt_cache`` bills the shared prefix at the cached
     input rate where the snapshot has one (gpt-4o); other models fall back to the input rate."""
     book = book or default_book()
@@ -219,8 +221,15 @@ def enforce(requests: list[dict[str, Any]], cfg: dict[str, Any]) -> dict[str, An
         t, a = q["tenant"], q["agent"]
         ratio = max(spend_t[t] / cfg["tenant_monthly_usd"][t], spend_a[a] / cfg["agent_monthly_usd"][a])
         critical = a in cfg["critical_agents"]
-        for who, spent, budget in ((f"tenant:{t}", spend_t[t], cfg["tenant_monthly_usd"][t]), (f"agent:{a}", spend_a[a], cfg["agent_monthly_usd"][a])):
-            for level, name in ((cfg["soft_alert"], "80%"), (cfg["degrade_at"], "100%"), (cfg["block_at"], "120%")):
+        for who, spent, budget in (
+            (f"tenant:{t}", spend_t[t], cfg["tenant_monthly_usd"][t]),
+            (f"agent:{a}", spend_a[a], cfg["agent_monthly_usd"][a]),
+        ):
+            for level, name in (
+                (cfg["soft_alert"], "80%"),
+                (cfg["degrade_at"], "100%"),
+                (cfg["block_at"], "120%"),
+            ):
                 if spent >= budget * level and (who, name) not in alerted:
                     alerted.add((who, name))
                     alerts.append(f"day {q['day']:>2}: {who} reached {name} of ${budget:,.0f}")
@@ -240,7 +249,13 @@ def enforce(requests: list[dict[str, Any]], cfg: dict[str, Any]) -> dict[str, An
         spend_t[t] += c
         spend_a[a] += c
         total += c
-    return {"total": total, "counts": counts, "alerts": alerts, "spend_tenant": dict(spend_t), "spend_agent": dict(spend_a)}
+    return {
+        "total": total,
+        "counts": counts,
+        "alerts": alerts,
+        "spend_tenant": dict(spend_t),
+        "spend_agent": dict(spend_a),
+    }
 ```
 <!-- /code -->
 
@@ -282,9 +297,13 @@ def analyze(input_tokens: float, output_tokens: float, payg_monthly: float) -> d
     payg_per_equiv = payg_monthly / equiv
     breakeven_equiv = ptu_monthly / payg_per_equiv
     return {
-        "monthly_input_tokens": round(input_tokens), "monthly_output_tokens": round(output_tokens),
-        "avg_tpm": round(avg_tpm), "peak_tpm": round(peak_tpm), "ptus": n,
-        "ptu_monthly": round(ptu_monthly, 2), "payg_monthly": round(payg_monthly, 2),
+        "monthly_input_tokens": round(input_tokens),
+        "monthly_output_tokens": round(output_tokens),
+        "avg_tpm": round(avg_tpm),
+        "peak_tpm": round(peak_tpm),
+        "ptus": n,
+        "ptu_monthly": round(ptu_monthly, 2),
+        "payg_monthly": round(payg_monthly, 2),
         "utilization_pct": round(100 * utilization, 2),
         "breakeven_volume_multiple": round(breakeven_equiv / equiv, 1),
         "breakeven_utilization_pct": round(100 * breakeven_equiv / capacity, 1),
@@ -313,10 +332,17 @@ def roi(uc: dict[str, Any], tasks: float, token_monthly: float) -> dict[str, Any
     r = (value - cost) / cost
     verdict = "scale" if r >= 1 else ("keep and optimize" if r >= 0 else "rework or retire")
     return {
-        "use_case": uc["use_case"], "tasks": round(tasks), "value": round(value, 2), "token_cost": round(token_monthly, 2),
-        "platform": uc["platform_monthly"], "amortized_build": round(amort, 2), "total_cost": round(cost, 2),
-        "roi_pct": round(100 * r, 1), "payback_months": round(uc["build_cost"] / margin, 1) if margin > 0 else None,
-        "cost_per_task": round(cost / tasks, 4) if tasks else None, "verdict": verdict,
+        "use_case": uc["use_case"],
+        "tasks": round(tasks),
+        "value": round(value, 2),
+        "token_cost": round(token_monthly, 2),
+        "platform": uc["platform_monthly"],
+        "amortized_build": round(amort, 2),
+        "total_cost": round(cost, 2),
+        "roi_pct": round(100 * r, 1),
+        "payback_months": round(uc["build_cost"] / margin, 1) if margin > 0 else None,
+        "cost_per_task": round(cost / tasks, 4) if tasks else None,
+        "verdict": verdict,
     }
 ```
 <!-- /code -->
@@ -342,7 +368,13 @@ def gate(baseline: Candidate, cand: Candidate, max_quality_drop_pts: float = 1.0
     if cand.safety_regressions:
         return Decision(cand.name, False, savings, delta, f"{cand.safety_regressions} safety regression(s)")
     if delta < -max_quality_drop_pts:
-        return Decision(cand.name, False, savings, delta, f"quality {delta:+.2f} pts exceeds the -{max_quality_drop_pts} pt budget")
+        return Decision(
+            cand.name,
+            False,
+            savings,
+            delta,
+            f"quality {delta:+.2f} pts exceeds the -{max_quality_drop_pts} pt budget",
+        )
     if savings <= 0:
         return Decision(cand.name, False, savings, delta, "no saving")
     return Decision(cand.name, True, savings, delta, "quality within budget")

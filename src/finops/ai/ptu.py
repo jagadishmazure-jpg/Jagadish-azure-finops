@@ -51,9 +51,13 @@ def analyze(input_tokens: float, output_tokens: float, payg_monthly: float) -> d
     payg_per_equiv = payg_monthly / equiv
     breakeven_equiv = ptu_monthly / payg_per_equiv
     return {
-        "monthly_input_tokens": round(input_tokens), "monthly_output_tokens": round(output_tokens),
-        "avg_tpm": round(avg_tpm), "peak_tpm": round(peak_tpm), "ptus": n,
-        "ptu_monthly": round(ptu_monthly, 2), "payg_monthly": round(payg_monthly, 2),
+        "monthly_input_tokens": round(input_tokens),
+        "monthly_output_tokens": round(output_tokens),
+        "avg_tpm": round(avg_tpm),
+        "peak_tpm": round(peak_tpm),
+        "ptus": n,
+        "ptu_monthly": round(ptu_monthly, 2),
+        "payg_monthly": round(payg_monthly, 2),
         "utilization_pct": round(100 * utilization, 2),
         "breakeven_volume_multiple": round(breakeven_equiv / equiv, 1),
         "breakeven_utilization_pct": round(100 * breakeven_equiv / capacity, 1),

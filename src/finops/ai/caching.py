@@ -19,9 +19,18 @@ from collections import Counter
 from typing import Any
 
 SYNONYMS = {
-    "where": "status", "track": "status", "show": "status", "status": "status",
-    "eta": "eta", "late": "eta", "when": "eta",
-    "shipment": "shipment", "parcel": "shipment", "order": "shipment", "load": "shipment", "delivery": "shipment",
+    "where": "status",
+    "track": "status",
+    "show": "status",
+    "status": "status",
+    "eta": "eta",
+    "late": "eta",
+    "when": "eta",
+    "shipment": "shipment",
+    "parcel": "shipment",
+    "order": "shipment",
+    "load": "shipment",
+    "delivery": "shipment",
 }
 STOP = {"is", "the", "for", "of", "what", "a"}
 CACHEABLE_AGENTS = {"eta-assistant"}
@@ -78,7 +87,9 @@ class ResponseCache:
         return "miss"
 
 
-def simulate(requests: list[dict[str, Any]], ttl_days: int = 1, semantic: bool = True, threshold: float = THRESHOLD) -> dict[str, Any]:
+def simulate(
+    requests: list[dict[str, Any]], ttl_days: int = 1, semantic: bool = True, threshold: float = THRESHOLD
+) -> dict[str, Any]:
     cache = ResponseCache(ttl_days, semantic, threshold)
     out = Counter()
     hits, wrong = set(), set()
@@ -89,5 +100,11 @@ def simulate(requests: list[dict[str, Any]], ttl_days: int = 1, semantic: bool =
             hits.add(q["request_id"])
         if cache.last_wrong:
             wrong.add(q["request_id"])
-    return {"exact": out["exact"], "semantic": out["semantic"], "miss": out["miss"], "hit_ids": hits, "wrong_ids": wrong,
-            "hit_rate": round(100 * (out["exact"] + out["semantic"]) / len(requests), 2)}
+    return {
+        "exact": out["exact"],
+        "semantic": out["semantic"],
+        "miss": out["miss"],
+        "hit_ids": hits,
+        "wrong_ids": wrong,
+        "hit_rate": round(100 * (out["exact"] + out["semantic"]) / len(requests), 2),
+    }

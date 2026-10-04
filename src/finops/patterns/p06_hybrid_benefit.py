@@ -48,41 +48,84 @@ def assign(candidates: list[dict[str, Any]], pool: int) -> tuple[list[dict[str, 
 def analyze() -> PatternResult:
     book = default_book()
     ent = load_json("licenses/entitlements.json")
-    targets = {f.resource_id: f.change["to"] for f in p01_rightsize.analyze().findings if f.change.get("kind") == "vm"}
+    targets = {
+        f.resource_id: f.change["to"]
+        for f in p01_rightsize.analyze().findings
+        if f.change.get("kind") == "vm"
+    }
     win, sql = [], []
     for r in load_inventory():
         p = r["properties"]
-        if not r["type"].endswith("virtualMachines") or p.get("os") != "windows" or p.get("power_state") != "running":
+        if (
+            not r["type"].endswith("virtualMachines")
+            or p.get("os") != "windows"
+            or p.get("power_state") != "running"
+        ):
             continue
         size = targets.get(r["id"], r["sku"])
         vcpu = VM_SHAPES[size][0]
         if p.get("license_type") != "Windows_Server":
             win_saving = book.monthly(vm_key(size, "windows")) - book.monthly(vm_key(size, "linux"))
-            win.append({"id": r["id"], "name": r["name"], "size": size, "cores": windows_cores(vcpu), "saving": win_saving,
-                        "base": book.monthly(vm_key(size, "windows"))})
+            win.append(
+                {
+                    "id": r["id"],
+                    "name": r["name"],
+                    "size": size,
+                    "cores": windows_cores(vcpu),
+                    "saving": win_saving,
+                    "base": book.monthly(vm_key(size, "windows")),
+                }
+            )
         if p.get("sql_edition") and p.get("sql_license") != "ahb":
             key = sql_license_key(p["sql_edition"], vcpu)
-            sql.append({"id": r["id"], "name": r["name"], "size": size, "edition": p["sql_edition"], "cores": sql_cores(vcpu),
-                        "saving": book.monthly(key), "base": book.monthly(key)})
+            sql.append(
+                {
+                    "id": r["id"],
+                    "name": r["name"],
+                    "size": size,
+                    "edition": p["sql_edition"],
+                    "cores": sql_cores(vcpu),
+                    "saving": book.monthly(key),
+                    "base": book.monthly(key),
+                }
+            )
     res = PatternResult(PATTERN, "Azure Hybrid Benefit for owned Windows Server and SQL Server licenses", [])
     covered, left = assign(win, ent["windows_server_datacenter_cores_with_sa"])
     for c in covered:
-        res.findings.append(Finding(
-            PATTERN, c["id"], c["name"], f"AHB Windows Server ({c['cores']} cores) on {c['size']}", c["base"], c["base"] - c["saving"],
-            change={"op": "set-license-type", "licenseType": "Windows_Server"}, evidence={"cores_used": c["cores"], "size_assessed": c["size"]},
-        ))
+        res.findings.append(
+            Finding(
+                PATTERN,
+                c["id"],
+                c["name"],
+                f"AHB Windows Server ({c['cores']} cores) on {c['size']}",
+                c["base"],
+                c["base"] - c["saving"],
+                change={"op": "set-license-type", "licenseType": "Windows_Server"},
+                evidence={"cores_used": c["cores"], "size_assessed": c["size"]},
+            )
+        )
     for c in left:
         res.skipped.append((c["name"], f"no Windows Server cores left in the pool (needs {c['cores']})"))
     for edition in ("standard", "enterprise"):
         pool = ent[f"sql_{edition}_cores_with_sa"]
         cov, lft = assign([c for c in sql if c["edition"] == edition], pool)
         for c in cov:
-            res.findings.append(Finding(
-                PATTERN, c["id"], c["name"], f"AHB SQL Server {edition} ({c['cores']} cores)", c["base"], 0.0,
-                change={"op": "set-sql-license", "sqlLicenseType": "AHUB"}, evidence={"cores_used": c["cores"], "edition": edition},
-            ))
+            res.findings.append(
+                Finding(
+                    PATTERN,
+                    c["id"],
+                    c["name"],
+                    f"AHB SQL Server {edition} ({c['cores']} cores)",
+                    c["base"],
+                    0.0,
+                    change={"op": "set-sql-license", "sqlLicenseType": "AHUB"},
+                    evidence={"cores_used": c["cores"], "edition": edition},
+                )
+            )
         for c in lft:
             res.skipped.append((c["name"], f"no SQL {edition} cores left (needs {c['cores']})"))
-    res.notes.append(f"pool: {ent['windows_server_datacenter_cores_with_sa']} Windows Server cores, {ent['sql_standard_cores_with_sa']} SQL Standard cores, {ent['sql_enterprise_cores_with_sa']} SQL Enterprise cores (synthetic register)")
+    res.notes.append(
+        f"pool: {ent['windows_server_datacenter_cores_with_sa']} Windows Server cores, {ent['sql_standard_cores_with_sa']} SQL Standard cores, {ent['sql_enterprise_cores_with_sa']} SQL Enterprise cores (synthetic register)"
+    )
     res.notes.append("savings are the license share of list price; sizes assessed after rightsizing (p01)")
     return res

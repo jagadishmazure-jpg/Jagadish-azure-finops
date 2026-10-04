@@ -49,13 +49,18 @@ class AuditLog:
         prev = "0" * 64
         for e in self.entries:
             body = {"event": e["event"], "data": e["data"], "prev": e["prev"]}
-            if e["prev"] != prev or hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest() != e["hash"]:
+            if (
+                e["prev"] != prev
+                or hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest() != e["hash"]
+            ):
                 return False
             prev = e["hash"]
         return True
 
 
-def approve(plan: ChangePlan, approver: str, role: str, now_hour: int, audit: AuditLog | None = None) -> Approval:
+def approve(
+    plan: ChangePlan, approver: str, role: str, now_hour: int, audit: AuditLog | None = None
+) -> Approval:
     if approver == plan.requested_by:
         raise ApprovalError("the requester cannot approve its own plan")
     if role not in APPROVER_ROLES:
@@ -89,9 +94,17 @@ def check(plan: ChangePlan, approvals: list[Approval], now_hour: int) -> list[st
     return problems
 
 
-def execute(plan: ChangePlan, approvals: list[Approval], now_hour: int, audit: AuditLog | None = None, dry_run: bool = True) -> list[str]:
+def execute(
+    plan: ChangePlan,
+    approvals: list[Approval],
+    now_hour: int,
+    audit: AuditLog | None = None,
+    dry_run: bool = True,
+) -> list[str]:
     if not dry_run:
-        raise NotImplementedError("live execution is deliberately not implemented; run the approved commands through change management")
+        raise NotImplementedError(
+            "live execution is deliberately not implemented; run the approved commands through change management"
+        )
     problems = check(plan, approvals, now_hour)
     if problems:
         if audit:

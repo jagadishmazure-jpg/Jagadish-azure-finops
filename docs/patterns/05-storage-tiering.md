@@ -86,11 +86,17 @@ def lifecycle_policy(plan: dict[str, dict[int, str]]) -> dict[str, Any]:
             continue
         if "tierToCool" in actions:
             actions["enableAutoTierToHotFromCool"] = True
-        rules.append({
-            "name": f"tier-{container}", "enabled": True, "type": "Lifecycle",
-            "definition": {"filters": {"blobTypes": ["blockBlob"], "prefixMatch": [f"{container}/"]},
-                           "actions": {"baseBlob": actions}},
-        })
+        rules.append(
+            {
+                "name": f"tier-{container}",
+                "enabled": True,
+                "type": "Lifecycle",
+                "definition": {
+                    "filters": {"blobTypes": ["blockBlob"], "prefixMatch": [f"{container}/"]},
+                    "actions": {"baseBlob": actions},
+                },
+            }
+        )
     return {"policy": {"rules": rules}}
 ```
 <!-- /code -->

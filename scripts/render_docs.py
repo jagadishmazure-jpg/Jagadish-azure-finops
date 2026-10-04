@@ -35,7 +35,15 @@ from finops.cli import main as cli  # noqa: E402
 
 BLOCK = re.compile(r"(<!-- output: (?P<args>[^>]+?) -->\n)(?P<body>.*?)(<!-- /output -->)", re.S)
 CODE = re.compile(r"(<!-- code: (?P<ref>[^>]+?) -->\n)(?P<body>.*?)(<!-- /code -->)", re.S)
-LANG = {".py": "python", ".kql": "kusto", ".tf": "hcl", ".bicep": "bicep", ".json": "json", ".yml": "yaml", ".sh": "bash"}
+LANG = {
+    ".py": "python",
+    ".kql": "kusto",
+    ".tf": "hcl",
+    ".bicep": "bicep",
+    ".json": "json",
+    ".yml": "yaml",
+    ".sh": "bash",
+}
 _cache: dict[str, str] = {}
 
 
@@ -54,7 +62,9 @@ def excerpt(ref: str) -> tuple[str, str]:
                 depth, j = 0, i
                 while True:
                     depth += lines[j].count("{") - lines[j].count("}")
-                    if depth <= 0 and j > i or (depth == 0 and "{" in lines[i] and j == i and lines[i].rstrip().endswith("}")):
+                    if (depth <= 0 and j > i) or (
+                        depth == 0 and "{" in lines[i] and j == i and lines[i].rstrip().endswith("}")
+                    ):
                         break
                     j += 1
                 return lang, "\n".join(lines[i : j + 1])
@@ -96,7 +106,9 @@ def render(text: str) -> str:
 
 
 def md_files() -> list[Path]:
-    return sorted(p for p in ROOT.rglob("*.md") if not any(x in p.parts for x in (".git", ".venv", ".pytest_cache")))
+    return sorted(
+        p for p in ROOT.rglob("*.md") if not any(x in p.parts for x in (".git", ".venv", ".pytest_cache"))
+    )
 
 
 def main(argv: list[str]) -> int:
@@ -114,7 +126,9 @@ def main(argv: list[str]) -> int:
     if check and stale:
         print("stale output blocks (run python scripts/render_docs.py):", *stale, sep="\n  ")
         return 1
-    print(f"{'checked' if check else 'rendered'} output blocks; {len(stale)} file(s) {'stale' if check else 'updated'}")
+    print(
+        f"{'checked' if check else 'rendered'} output blocks; {len(stale)} file(s) {'stale' if check else 'updated'}"
+    )
     return 0
 
 

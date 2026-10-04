@@ -25,9 +25,9 @@ from pathlib import Path
 from mcp.server.mcpserver import MCPServer
 from mcp.types import ToolAnnotations
 
+from finops import ROOT
 from finops.agent.analyzer import EstateAnalysis, analyze_estate
 from finops.agent.approval import Approval, ApprovalError, AuditLog, check, execute, required_approvals
-from finops import ROOT
 from finops.agent.plan import ChangePlan, build_plan
 
 READ = ToolAnnotations(readOnlyHint=True, idempotentHint=True, openWorldHint=False)
@@ -82,9 +82,15 @@ def doc_for(pattern: str) -> str:
 def estate_summary() -> dict:
     """Billed monthly spend, total proposed savings and savings by pattern."""
     e = estate()
-    return {"company": "Larkspur Freight (fictional)", "billed_monthly": e.billed_monthly, "savings_monthly": e.savings_monthly,
-            "savings_pct": round(100 * e.savings_monthly / e.billed_monthly, 1), "by_pattern": e.by_pattern(),
-            "findings": len(e.findings), "price_basis": "Azure Retail Prices list-price snapshot"}
+    return {
+        "company": "Larkspur Freight (fictional)",
+        "billed_monthly": e.billed_monthly,
+        "savings_monthly": e.savings_monthly,
+        "savings_pct": round(100 * e.savings_monthly / e.billed_monthly, 1),
+        "by_pattern": e.by_pattern(),
+        "findings": len(e.findings),
+        "price_basis": "Azure Retail Prices list-price snapshot",
+    }
 
 
 @server.tool(annotations=READ)
@@ -96,8 +102,18 @@ def list_findings(pattern: str = "", min_savings: float = 0.0, limit: int = 50) 
             continue
         if f.savings_monthly < min_savings:
             continue
-        out.append({"id": f.id, "pattern": f.pattern, "resource": f.resource_name, "action": f.action,
-                    "savings_monthly": f.savings_monthly, "risk": f.risk, "confidence": f.confidence, "estimate": f.estimate})
+        out.append(
+            {
+                "id": f.id,
+                "pattern": f.pattern,
+                "resource": f.resource_name,
+                "action": f.action,
+                "savings_monthly": f.savings_monthly,
+                "risk": f.risk,
+                "confidence": f.confidence,
+                "estimate": f.estimate,
+            }
+        )
     return out[:limit]
 
 
@@ -123,10 +139,19 @@ def draft_change_plan(finding_ids: list[str]) -> dict:
     STATE.plans[plan.plan_id] = plan
     STATE.save_plan(plan)
     STATE.audit.append("plan-drafted", plan=plan.plan_id, digest=plan.digest, steps=len(plan.steps))
-    return {"plan_id": plan.plan_id, "digest": plan.digest, "status": plan.status, "savings_monthly": plan.savings_monthly,
-            "approvals_required": required_approvals(plan), "irreversible": plan.irreversible,
-            "steps": [{"resource": s.resource, "action": s.action, "command": s.command, "rollback": s.rollback} for s in plan.steps],
-            "next": "a human approves with: finops approve --plan <plan_id> --approver <name> --role finops-approver"}
+    return {
+        "plan_id": plan.plan_id,
+        "digest": plan.digest,
+        "status": plan.status,
+        "savings_monthly": plan.savings_monthly,
+        "approvals_required": required_approvals(plan),
+        "irreversible": plan.irreversible,
+        "steps": [
+            {"resource": s.resource, "action": s.action, "command": s.command, "rollback": s.rollback}
+            for s in plan.steps
+        ],
+        "next": "a human approves with: finops approve --plan <plan_id> --approver <name> --role finops-approver",
+    }
 
 
 @server.tool(annotations=READ)
@@ -137,8 +162,13 @@ def plan_status(plan_id: str) -> dict:
         return {"error": f"unknown plan {plan_id}"}
     held = STATE.approvals_for(plan_id)
     problems = check(plan, held, STATE.clock_hour)
-    return {"plan_id": plan_id, "status": plan.status, "approvers": [a.approver for a in held],
-            "required": required_approvals(plan), "problems": problems}
+    return {
+        "plan_id": plan_id,
+        "status": plan.status,
+        "approvers": [a.approver for a in held],
+        "required": required_approvals(plan),
+        "problems": problems,
+    }
 
 
 @server.tool(annotations=DRY)
@@ -161,10 +191,21 @@ def ai_cost_summary() -> dict:
 
     a = analyze()
     att = a["attribution"]
-    return {"monthly_cost": round(att["total"], 2), "by_tenant": {k: round(v, 2) for k, v in att["by_tenant"].items()},
-            "by_agent": {k: round(v, 2) for k, v in att["by_agent"].items()},
-            "optimizations": [{"name": d.name, "ship": d.ship, "savings": d.savings, "quality_delta": d.quality_delta, "reason": d.reason}
-                              for d in a["decisions"]]}
+    return {
+        "monthly_cost": round(att["total"], 2),
+        "by_tenant": {k: round(v, 2) for k, v in att["by_tenant"].items()},
+        "by_agent": {k: round(v, 2) for k, v in att["by_agent"].items()},
+        "optimizations": [
+            {
+                "name": d.name,
+                "ship": d.ship,
+                "savings": d.savings,
+                "quality_delta": d.quality_delta,
+                "reason": d.reason,
+            }
+            for d in a["decisions"]
+        ],
+    }
 
 
 def main() -> None:

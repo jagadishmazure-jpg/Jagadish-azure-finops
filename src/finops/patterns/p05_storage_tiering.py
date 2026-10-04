@@ -61,11 +61,17 @@ def lifecycle_policy(plan: dict[str, dict[int, str]]) -> dict[str, Any]:
             continue
         if "tierToCool" in actions:
             actions["enableAutoTierToHotFromCool"] = True
-        rules.append({
-            "name": f"tier-{container}", "enabled": True, "type": "Lifecycle",
-            "definition": {"filters": {"blobTypes": ["blockBlob"], "prefixMatch": [f"{container}/"]},
-                           "actions": {"baseBlob": actions}},
-        })
+        rules.append(
+            {
+                "name": f"tier-{container}",
+                "enabled": True,
+                "type": "Lifecycle",
+                "definition": {
+                    "filters": {"blobTypes": ["blockBlob"], "prefixMatch": [f"{container}/"]},
+                    "actions": {"baseBlob": actions},
+                },
+            }
+        )
     return {"policy": {"rules": rules}}
 
 
@@ -82,7 +88,15 @@ def analyze() -> PatternResult:
         priced = []
         for b in c["buckets"]:
             tier, costs = choose_tier(b, c["max_rehydrate_hours"])
-            priced.append({"min_age": b["min_age"], "gb": b["gb"], "read_gb": b["read_gb"], "tier": tier, "monthly_by_tier": costs})
+            priced.append(
+                {
+                    "min_age": b["min_age"],
+                    "gb": b["gb"],
+                    "read_gb": b["read_gb"],
+                    "tier": tier,
+                    "monthly_by_tier": costs,
+                }
+            )
             before += bucket_cost("hot", b["gb"], b["read_gb"])
             after += costs[tier]
             moves[b["min_age"]] = tier
@@ -91,14 +105,26 @@ def analyze() -> PatternResult:
             continue
         plan[c["container"]] = moves
         path = " / ".join(f"{a}d+:{t}" for a, t in sorted(moves.items()))
-        res.findings.append(Finding(
-            PATTERN, f"{c['account']}/{c['container']}", f"{c['account']}/{c['container']}", f"lifecycle {path}",
-            before, after, confidence="high", risk="low" if "archive" not in moves.values() else "medium",
-            change={"op": "lifecycle-policy", "container": c["container"]},
-            evidence={"buckets": priced, "rehydrate_objective_hours": c["max_rehydrate_hours"]},
-            estimate=True,
-        ))
+        res.findings.append(
+            Finding(
+                PATTERN,
+                f"{c['account']}/{c['container']}",
+                f"{c['account']}/{c['container']}",
+                f"lifecycle {path}",
+                before,
+                after,
+                confidence="high",
+                risk="low" if "archive" not in moves.values() else "medium",
+                change={"op": "lifecycle-policy", "container": c["container"]},
+                evidence={"buckets": priced, "rehydrate_objective_hours": c["max_rehydrate_hours"]},
+                estimate=True,
+            )
+        )
     res.extra["policy"] = lifecycle_policy(plan)
-    res.notes.append(f"ASSUMPTION {AVG_READ_MB:.0f} MB per read operation; prices are the flat first tier ({book.price('blob.hot.gb_month')}/GB hot)")
-    res.notes.append("requires last-access-time tracking on the account; first transition writes are a one-off cost not shown")
+    res.notes.append(
+        f"ASSUMPTION {AVG_READ_MB:.0f} MB per read operation; prices are the flat first tier ({book.price('blob.hot.gb_month')}/GB hot)"
+    )
+    res.notes.append(
+        "requires last-access-time tracking on the account; first transition writes are a one-off cost not shown"
+    )
     return res

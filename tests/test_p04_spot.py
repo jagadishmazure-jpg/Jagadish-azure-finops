@@ -1,9 +1,9 @@
 import random
 
 import pytest
+from tests.conftest import find
 
 from finops.patterns import p04_spot as P
-from tests.conftest import find
 
 
 @pytest.fixture(scope="module")
@@ -35,8 +35,18 @@ def test_no_evictions_means_no_rework():
 
 
 def test_job_that_misses_deadline_is_rejected(monkeypatch):
-    jobs = [{"name": "tight", "size": "D4s_v5", "nodes": 2, "hours_per_run": 4.0, "runs_per_month": 1, "interruptible": True,
-             "checkpoint_minutes": 30, "deadline_hours": 4.0}]
+    jobs = [
+        {
+            "name": "tight",
+            "size": "D4s_v5",
+            "nodes": 2,
+            "hours_per_run": 4.0,
+            "runs_per_month": 1,
+            "interruptible": True,
+            "checkpoint_minutes": 30,
+            "deadline_hours": 4.0,
+        }
+    ]
     monkeypatch.setattr(P, "load_json", lambda _: jobs)
     out = P.analyze()
     assert not out.findings and "deadline" in out.skipped[0][1]

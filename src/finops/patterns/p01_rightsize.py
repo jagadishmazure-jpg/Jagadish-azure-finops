@@ -17,7 +17,13 @@ from finops.patterns.base import Finding, PatternResult, percentile
 from finops.pricing import default_book
 
 PATTERN = "p01-rightsize"
-RULE = {"min_hours": 14 * 24, "cpu_p95_max": 40.0, "mem_p95_max": 50.0, "target_cpu_p95": 65.0, "target_mem_p95": 75.0}
+RULE = {
+    "min_hours": 14 * 24,
+    "cpu_p95_max": 40.0,
+    "mem_p95_max": 50.0,
+    "target_cpu_p95": 65.0,
+    "target_mem_p95": 75.0,
+}
 VM_LADDER = {"Dsv5": ["D2s_v5", "D4s_v5", "D8s_v5"], "Esv5": ["E4s_v5"]}
 PLAN_LADDER = ["P0v3", "P1v3", "P2v3", "P3v3"]
 PLAN_SHAPES = {"P0v3": (1, 4), "P1v3": (2, 8), "P2v3": (4, 16), "P3v3": (8, 32)}
@@ -30,7 +36,9 @@ def _family(size: str) -> list[str]:
     return [size]
 
 
-def recommend(size: str, ladder: list[str], shapes: dict, cpu: list[float], mem: list[float]) -> tuple[str, dict]:
+def recommend(
+    size: str, ladder: list[str], shapes: dict, cpu: list[float], mem: list[float]
+) -> tuple[str, dict]:
     """Return (target size, evidence). Target == size means no change."""
     p95c, p95m, peak = percentile(cpu, 95), percentile(mem, 95), max(cpu)
     ev = {"cpu_p95": p95c, "mem_p95": p95m, "cpu_peak": peak, "hours": len(cpu)}
@@ -50,11 +58,18 @@ def recommend(size: str, ladder: list[str], shapes: dict, cpu: list[float], mem:
             break
         target, idx = cand, idx - 1
     if target == size:
-        ev["reason"] = "already the smallest size that keeps projected p95 within target" if idx else "smallest size in the family ladder"
+        ev["reason"] = (
+            "already the smallest size that keeps projected p95 within target"
+            if idx
+            else "smallest size in the family ladder"
+        )
         return size, ev
     rc = shapes[size][0] / shapes[target][0]
-    ev.update(projected_cpu_p95=round(p95c * rc, 1), projected_mem_p95=round(p95m * shapes[size][1] / shapes[target][1], 1),
-              projected_cpu_peak=round(peak * rc, 1))
+    ev.update(
+        projected_cpu_p95=round(p95c * rc, 1),
+        projected_mem_p95=round(p95m * shapes[size][1] / shapes[target][1], 1),
+        projected_cpu_peak=round(peak * rc, 1),
+    )
     return target, ev
 
 
@@ -85,13 +100,27 @@ def analyze() -> PatternResult:
             continue
         after = {**r, "sku": target}
         burst = ev["projected_cpu_peak"] > 100
-        res.findings.append(Finding(
-            PATTERN, r["id"], r["name"], f"resize {r['sku']} -> {target}",
-            monthly_cost(r, book), monthly_cost(after, book),
-            confidence="medium" if burst else "high", risk="medium" if burst else "low",
-            change={"op": "resize", "from": r["sku"], "to": target, "kind": "vm" if is_vm else "app-service-plan"},
-            evidence=ev,
-        ))
+        res.findings.append(
+            Finding(
+                PATTERN,
+                r["id"],
+                r["name"],
+                f"resize {r['sku']} -> {target}",
+                monthly_cost(r, book),
+                monthly_cost(after, book),
+                confidence="medium" if burst else "high",
+                risk="medium" if burst else "low",
+                change={
+                    "op": "resize",
+                    "from": r["sku"],
+                    "to": target,
+                    "kind": "vm" if is_vm else "app-service-plan",
+                },
+                evidence=ev,
+            )
+        )
         if burst:
-            res.notes.append(f"{r['name']}: projected peak {ev['projected_cpu_peak']}% > 100%; resize after moving the weekly spike or accept queuing")
+            res.notes.append(
+                f"{r['name']}: projected peak {ev['projected_cpu_peak']}% > 100%; resize after moving the weekly spike or accept queuing"
+            )
     return res

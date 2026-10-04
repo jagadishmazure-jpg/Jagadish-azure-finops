@@ -1,7 +1,7 @@
 import pytest
+from tests.conftest import find
 
 from finops.patterns import p08_idle_cleanup as P
-from tests.conftest import find
 
 
 @pytest.fixture(scope="module")
@@ -37,10 +37,22 @@ def test_orphan_nic_is_hygiene_only(res):
 
 
 def test_plan_with_active_app_is_not_deleted():
-    plan = {"id": "/subscriptions/s/resourceGroups/rg/providers/Microsoft.Web/serverfarms/p", "name": "p", "type": "Microsoft.Web/serverfarms",
-            "sku": "WS1", "tags": {}, "properties": {"kind": "workflowapp-plan", "apps": 1, "workflow_runs_30d": 0}}
-    site = {"id": "x", "name": "s", "type": "Microsoft.Web/sites", "sku": "WS1", "tags": {},
-            "properties": {"plan": plan["id"], "monthly_runs": 50, "actions_per_run": 3}}
+    plan = {
+        "id": "/subscriptions/s/resourceGroups/rg/providers/Microsoft.Web/serverfarms/p",
+        "name": "p",
+        "type": "Microsoft.Web/serverfarms",
+        "sku": "WS1",
+        "tags": {},
+        "properties": {"kind": "workflowapp-plan", "apps": 1, "workflow_runs_30d": 0},
+    }
+    site = {
+        "id": "x",
+        "name": "s",
+        "type": "Microsoft.Web/sites",
+        "sku": "WS1",
+        "tags": {},
+        "properties": {"plan": plan["id"], "monthly_runs": 50, "actions_per_run": 3},
+    }
     assert not P.detect([plan, site]).findings
 
 

@@ -17,12 +17,28 @@ import re
 from typing import Any
 
 SMALL, LARGE = "gpt-4o-mini", "gpt-4o"
-COMPLEX_CUES = {"explain", "propose", "summarize", "review", "compare", "recommend", "draft", "dispute", "claims", "mismatch"}
+COMPLEX_CUES = {
+    "explain",
+    "propose",
+    "summarize",
+    "review",
+    "compare",
+    "recommend",
+    "draft",
+    "dispute",
+    "claims",
+    "mismatch",
+}
 SIMPLE_CUES = {"where", "eta", "track", "status", "late"}
 MAX_SIMPLE_WORDS = 9
 
 # SIMULATED pass rates (stand-in for an LLM judge over a golden set)
-PASS_RATE = {(LARGE, "simple"): 0.98, (LARGE, "complex"): 0.95, (SMALL, "simple"): 0.97, (SMALL, "complex"): 0.70}
+PASS_RATE = {
+    (LARGE, "simple"): 0.98,
+    (LARGE, "complex"): 0.95,
+    (SMALL, "simple"): 0.97,
+    (SMALL, "complex"): 0.70,
+}
 
 
 def classify(prompt: str) -> tuple[str, float]:

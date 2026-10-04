@@ -22,3 +22,4 @@ pytest suite, offline. Run `pytest -q`.
 | [`test_mcp_and_cli.py`](test_mcp_and_cli.py) | MCP server, case study, CLI |
 | [`test_iac.py`](test_iac.py) | Policy JSON, Terraform and Bicep structure |
 | [`test_repo_hygiene.py`](test_repo_hygiene.py) | READMEs, no dates, no secrets, doc sections, doc drift |
+| [`test_render_docs.py`](test_render_docs.py) | Doc renderer: output blocks and code excerpts |

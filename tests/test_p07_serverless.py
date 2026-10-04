@@ -1,7 +1,7 @@
 import pytest
+from tests.conftest import find
 
 from finops.patterns import p07_serverless as P
-from tests.conftest import find
 
 
 @pytest.fixture(scope="module")
@@ -35,7 +35,10 @@ def test_blockers():
 def test_blocked_workload_is_skipped(monkeypatch):
     from finops.datasets import load_inventory
 
-    inv = [dict(r, properties={**r["properties"], "needs_vnet": True}) if r["name"] == "fn-label-print" else r for r in load_inventory()]
+    inv = [
+        dict(r, properties={**r["properties"], "needs_vnet": True}) if r["name"] == "fn-label-print" else r
+        for r in load_inventory()
+    ]
     monkeypatch.setattr(P, "load_inventory", lambda: inv)
     out = P.analyze()
     assert any(n == "fn-label-print" and "blocked" in why for n, why in out.skipped)

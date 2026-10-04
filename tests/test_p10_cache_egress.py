@@ -1,7 +1,7 @@
 import pytest
+from tests.conftest import find
 
 from finops.patterns import p10_cache_egress as P
-from tests.conftest import find
 
 
 @pytest.fixture(scope="module")
@@ -24,8 +24,20 @@ def test_front_door_priced_with_base_fee(book):
 
 
 def test_front_door_rejected_when_not_cheaper(monkeypatch):
-    reg = {"endpoints": [{"name": "tiny", "origin": "stlkportalassets", "egress_gb": 150, "requests_10k": 10, "cacheable": 0.9,
-                          "expected_hit_ratio": 0.8, "origin_plan": None}], "cross_region": []}
+    reg = {
+        "endpoints": [
+            {
+                "name": "tiny",
+                "origin": "stlkportalassets",
+                "egress_gb": 150,
+                "requests_10k": 10,
+                "cacheable": 0.9,
+                "expected_hit_ratio": 0.8,
+                "origin_plan": None,
+            }
+        ],
+        "cross_region": [],
+    }
     monkeypatch.setattr(P, "load_json", lambda _: reg)
     out = P.analyze()
     assert not out.findings and "would not beat" in out.skipped[0][1]

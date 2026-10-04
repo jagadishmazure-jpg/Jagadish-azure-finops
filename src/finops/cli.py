@@ -1,14 +1,14 @@
 """Command line entry point: ``finops <command>``.
 
-    finops scan                 all ten patterns + the estate total
-    finops estate --top 10      estate totals and the top findings only
-    finops pattern p05          one pattern
-    finops ai                   AI FinOps report
-    finops agent --top 5        ranked findings and a dry-run plan for the top N
-    finops case-study           the anonymized idle-resources case study
-    finops approve --plan ID --approver NAME --role finops-approver
-    finops mcp                  run the FinOps agent as an MCP server (stdio)
-    finops mcp-demo             scripted MCP session: plan, refusal, two approvals, dry run
+finops scan                 all ten patterns + the estate total
+finops estate --top 10      estate totals and the top findings only
+finops pattern p05          one pattern
+finops ai                   AI FinOps report
+finops agent --top 5        ranked findings and a dry-run plan for the top N
+finops case-study           the anonymized idle-resources case study
+finops approve --plan ID --approver NAME --role finops-approver
+finops mcp                  run the FinOps agent as an MCP server (stdio)
+finops mcp-demo             scripted MCP session: plan, refusal, two approvals, dry run
 """
 
 from __future__ import annotations
@@ -30,12 +30,18 @@ def estate_report(top: int = 10) -> str:
     L.append(f"  billed (30-day FOCUS export, projected to 730 h): {money(e.billed_monthly)}/mo")
     for p, v in e.by_pattern().items():
         L.append(f"  {p:<24} save {money(v):>10}/mo")
-    L.append(f"  TOTAL proposed savings {money(e.savings_monthly)}/mo ({100 * e.savings_monthly / e.billed_monthly:.1f}% of the bill), {money(e.savings_monthly * 12)}/yr")
-    L.append(f"  findings: {len(e.findings)}; conflicts resolved: {len(e.conflicts)}; reconciliation checks: "
-             f"{sum(r['ok'] for r in e.reconciliation)}/{len(e.reconciliation)} within 5% of the bill")
+    L.append(
+        f"  TOTAL proposed savings {money(e.savings_monthly)}/mo ({100 * e.savings_monthly / e.billed_monthly:.1f}% of the bill), {money(e.savings_monthly * 12)}/yr"
+    )
+    L.append(
+        f"  findings: {len(e.findings)}; conflicts resolved: {len(e.conflicts)}; reconciliation checks: "
+        f"{sum(r['ok'] for r in e.reconciliation)}/{len(e.reconciliation)} within 5% of the bill"
+    )
     L.append(f"  top {top}:")
     for f in e.findings[:top]:
-        L.append(f"    {f.id}  {f.resource_name:<26} {f.action:<52} save {money(f.savings_monthly):>9}/mo [{f.risk}]")
+        L.append(
+            f"    {f.id}  {f.resource_name:<26} {f.action:<52} save {money(f.savings_monthly):>9}/mo [{f.risk}]"
+        )
     return "\n".join(L)
 
 
@@ -81,7 +87,11 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"    change:   {json.dumps(f.change, sort_keys=True)}")
             if "policy" in res.extra:
                 print("  generated policy:")
-                print("\n".join("    " + line for line in json.dumps(res.extra["policy"], indent=2).splitlines()))
+                print(
+                    "\n".join(
+                        "    " + line for line in json.dumps(res.extra["policy"], indent=2).splitlines()
+                    )
+                )
     elif args.cmd == "ai":
         from finops.ai.report import report
 
@@ -92,7 +102,9 @@ def main(argv: list[str] | None = None) -> int:
 
         print(estate_report(args.top))
         plan = build_plan(analyze_estate().findings[: args.top])
-        print(f"  plan {plan.plan_id} (digest {plan.digest[:12]}...), {len(plan.steps)} steps, status {plan.status}:")
+        print(
+            f"  plan {plan.plan_id} (digest {plan.digest[:12]}...), {len(plan.steps)} steps, status {plan.status}:"
+        )
         for s in plan.steps:
             print(f"    [DRY-RUN when approved] {s.command}")
     elif args.cmd == "case-study":
@@ -112,7 +124,9 @@ def main(argv: list[str] | None = None) -> int:
         a = approve(plan, args.approver, args.role, args.hour)
         out = approvals_dir() / f"{plan.plan_id}.{args.approver.split('@')[0]}.approval.json"
         out.write_text(json.dumps(a.__dict__, indent=1, sort_keys=True))
-        print(f"approved {plan.plan_id} (digest {plan.digest[:12]}...) as {args.approver} [{args.role}] -> {out.name}")
+        print(
+            f"approved {plan.plan_id} (digest {plan.digest[:12]}...) as {args.approver} [{args.role}] -> {out.name}"
+        )
     elif args.cmd == "mcp-demo":
         from finops.agent.demo import run as demo
 

@@ -49,8 +49,16 @@ def reconcile(findings: list[Finding], rows: list[CostRow]) -> list[dict[str, An
             continue
         projected = billed[f.resource_id] * HOURS_PER_MONTH / OBSERVED_HOURS
         gap = (f.current_monthly - projected) / projected
-        out.append({"finding": f.id, "resource": f.resource_name, "model": round(f.current_monthly, 2), "bill": round(projected, 2),
-                    "gap_pct": round(100 * gap, 2), "ok": abs(gap) <= RECONCILE_TOLERANCE})
+        out.append(
+            {
+                "finding": f.id,
+                "resource": f.resource_name,
+                "model": round(f.current_monthly, 2),
+                "bill": round(projected, 2),
+                "gap_pct": round(100 * gap, 2),
+                "ok": abs(gap) <= RECONCILE_TOLERANCE,
+            }
+        )
     return out
 ```
 <!-- /code -->
