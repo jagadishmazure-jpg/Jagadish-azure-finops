@@ -7,12 +7,12 @@ license = { text = "MIT" }
 authors = [{ name = "Jagadish Meduri" }]
 requires-python = ">=3.13"
 dependencies = [
-  "mcp==2.2.0",       # FinOps agent exposed as an MCP server (in-process client in tests)
+  "mcp==2.3.0",       # FinOps agent exposed as an MCP server (in-process client in tests)
   "pyyaml==6.0.3",    # policy and guardrail config
 ]
 
 [project.optional-dependencies]
-dev = ["pytest==9.1.1", "pytest-asyncio==1.4.0", "ruff==0.16.9"]
+dev = ["pytest==9.1.1", "pytest-asyncio==1.4.0", "ruff==0.16.10"]
 
 [project.scripts]
 finops = "finops.cli:main"
