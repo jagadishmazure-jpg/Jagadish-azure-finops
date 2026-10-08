@@ -62,3 +62,7 @@ where it is implemented.
 22. **OIDC only** for CI/CD, no stored cloud secrets; deploys gated off until configured.
 23. **No real identifiers** in the repo: no subscription IDs, tenant IDs, customer names or
     personal email addresses (enforced by `tests/test_repo_hygiene.py`).
+24. **Pinned, scanned supply chain.** Actions pinned to commit SHAs with read-only default
+    permissions, gitleaks over the full git history, CodeQL, and weekly grouped Dependabot updates
+    (enforced by `tests/test_iac.py::test_workflows_are_hardened`). GitHub secret scanning, push
+    protection, Dependabot alerts and a `main` ruleset are switched on in the repository settings.

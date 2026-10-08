@@ -13,7 +13,8 @@ Until then the workflow only reports the gate.
 
 | Workflow | Trigger | What it does |
 |---|---|---|
-| `ci.yml` | push, PR | ruff, pytest, data and doc drift checks, `finops scan/ai/case-study`, `bicep build` with zero warnings |
+| `ci.yml` | push, PR | ruff, pytest, data and doc drift checks, `finops scan/ai/case-study`, `bicep build` with zero warnings, gitleaks over the full git history |
+| `codeql.yml` | push, PR, weekly | CodeQL for the Python code and the workflow files; findings go to the Security tab |
 | `infra.yml` | push, PR | terraform fmt, validate, test (mocked provider), tflint, checkov; plan only if OIDC variables exist |
 | `deploy.yml` | push to main, manual | gate, then dev, then prod after reviewer approval; Terraform or Bicep |
 | `teardown.yml` | manual | destroy one environment; type its name to confirm; prod needs approval |
