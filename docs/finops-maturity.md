@@ -2,7 +2,7 @@
 
 The FinOps Foundation describes maturity in three stages, crawl, walk and run, applied per
 capability rather than to a whole company. A team can run on tagging and still crawl on
-commitments. Below is how I use the model, in my own words, mapped to the patterns in this repo.
+commitments. Below is how I use the model, mapped to the patterns in this repo.
 
 ## The idea in one paragraph
 
