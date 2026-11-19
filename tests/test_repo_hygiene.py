@@ -27,6 +27,14 @@ SECTIONS = [
 ]
 PATTERN_DOCS = sorted((ROOT / "docs/patterns").glob("[0-9][0-9]-*.md"))
 MONTHS = r"\b(January|February|March|April|June|July|August|September|October|November|December)\b"
+# Source links may contain a publication date. The rule is about prose, so URLs are stripped first.
+URL = re.compile(r"https?://\S+")
+
+
+def prose_without_urls(text: str) -> str:
+    return URL.sub("", text)
+
+
 TEXT_FILES = [
     p
     for p in ROOT.rglob("*")
@@ -84,11 +92,17 @@ def test_folder_readmes_list_every_file():
 
 def test_no_dates_in_markdown():
     for p in MD:
-        t = p.read_text()
+        t = prose_without_urls(p.read_text())
         assert not re.search(r"\b\d{4}-\d{2}-\d{2}\b", t), f"ISO date in {p}"
         assert not re.search(r"(?<![\d$,.])20[1-3]\d(?![\d,.%])", t), f"year in {p}"
         assert not re.search(MONTHS, t), f"month name in {p}"
         assert "Date:" not in t, f"Date line in {p}"
+
+
+def test_source_urls_do_not_excuse_a_date_in_prose():
+    sample = "See https://example.com/notes-2026-11-18 for the rate card."
+    assert prose_without_urls(sample).strip() == "See  for the rate card."
+    assert re.search(r"\b\d{4}-\d{2}-\d{2}\b", "Updated 2026-11-18 in the body")
 
 
 @pytest.mark.parametrize("doc", PATTERN_DOCS, ids=lambda p: p.name)

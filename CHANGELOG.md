@@ -6,6 +6,7 @@ All notable changes are recorded here. The format follows Keep a Changelog.
 
 ### Added
 
+- AI cost modeling on a separate rate card: published GPT-6.2 Astra ($8 input / $0.40 cached input / $40 output per million tokens) and Sol ($2 / $0.10 / $10) rates, Foundry automatic routing across 44 models, and Baseten-hosted open models. Azure and Bedrock prices for the new models stay `[verify]` and are not billed. A single-model versus routed simulation, an Azure-versus-Bedrock table, and a per-agent cost and value report are part of `finops ai`.
 - Threat model (`docs/security/threat-model.md`): STRIDE, OWASP Top 10 for LLM Applications and MITRE ATLAS mapped to this repository's components, each row with its control, test evidence and built / planned status.
 - SBOM job in CI: an SPDX JSON software bill of materials of the source tree on every run (artifact `sbom.spdx.json`).
 - Supply-chain hardening: every GitHub Action pinned to a commit SHA with a version comment, top-level `permissions` on every workflow, a gitleaks job in CI, a CodeQL workflow, `.github/dependabot.yml` and a guard test (`test_workflows_are_hardened`).

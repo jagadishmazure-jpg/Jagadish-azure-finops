@@ -1,0 +1,122 @@
+{
+ "label": "MODEL RATE CARD: published token rates, plus rows marked verify where the cited source did not publish a price. Not an invoice. Azure list prices for gpt-4o and gpt-4o-mini stay in the retail-prices snapshot.",
+ "unit": "USD per million tokens",
+ "sources": [
+  {
+   "id": "foundry-router",
+   "title": "Foundry Models: automatic routing across 44 models, and Baseten-hosted open models",
+   "url": "https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/from-model-choice-to-your-durable-advantage-build-ai-that-keeps-improving/4573609"
+  },
+  {
+   "id": "openai-gpt-6-2",
+   "title": "Introducing GPT-6.2 Astra and Sol",
+   "url": "https://openai.com/index/introducing-gpt-6-2-astra-sol/"
+  },
+  {
+   "id": "bedrock-ga",
+   "title": "GPT-6.2 Astra and GPT-6.2 Sol on Amazon Bedrock",
+   "url": "https://academy.openai.com/public/clubs/openai-on-aws/blogs/gpt-62-astra-and-gpt-62-sol-are-now-available-on-amazon-bedrock-2026-11-18"
+  },
+  {
+   "id": "agent-365",
+   "title": "Agent 365 cost and value analytics",
+   "url": "https://techcommunity.microsoft.com/blog/agent-365-blog/whats-new-in-microsoft-agent-365-ignite-2026/4571753"
+  }
+ ],
+ "foundry_router": {
+  "model_count": 44,
+  "automatic_selection_by_default": true,
+  "surfaces": ["Foundry projects", "AI Gateway"],
+  "vendors": ["OpenAI", "Anthropic", "xAI", "DeepSeek", "Meta"],
+  "prices_published": false,
+  "source": "foundry-router",
+  "note": "The source says the router chooses among 44 models and that automatic selection is on by default. It does not list those models or their prices. The routing simulation prices only the two GPT-6.2 rates that were published."
+ },
+ "baseten": {
+  "status": "public preview",
+  "billing": "serverless pay-as-you-go, global or US Data Zone; provisioned throughput announced to follow",
+  "host": "Foundry, first-party",
+  "models": [
+   {"id": "Kimi-K3", "price_status": "verify"},
+   {"id": "GLM 5.3", "price_status": "verify"},
+   {"id": "GLM-5.3-Flash", "price_status": "verify"},
+   {"id": "DeepSeek V4.1-Flash-1017", "price_status": "verify"}
+  ],
+  "source": "foundry-router",
+  "note": "Named as Baseten-hosted open models on Foundry. No token price was published."
+ },
+ "rates": [
+  {
+   "model": "gpt-6.2-astra",
+   "provider": "amazon-bedrock",
+   "input_per_million": null,
+   "cached_input_per_million": null,
+   "output_per_million": null,
+   "price_status": "verify",
+   "availability": "generally available",
+   "cached_discount_wording": "",
+   "source": "bedrock-ga",
+   "note": "Generally available on Amazon Bedrock. The announcement does not publish a token price. Not billed, and the OpenAI API rate is not copied into this row."
+  },
+  {
+   "model": "gpt-6.2-astra",
+   "provider": "azure-foundry",
+   "input_per_million": null,
+   "cached_input_per_million": null,
+   "output_per_million": null,
+   "price_status": "verify",
+   "availability": "not stated in the sources",
+   "cached_discount_wording": "",
+   "source": "foundry-router",
+   "note": "Azure-side price was not published in the sources. Marked [verify]. Not billed."
+  },
+  {
+   "model": "gpt-6.2-astra",
+   "provider": "openai-api",
+   "input_per_million": 8.0,
+   "cached_input_per_million": 0.4,
+   "output_per_million": 40.0,
+   "price_status": "published",
+   "availability": "API rates published",
+   "cached_discount_wording": "60% discount on cached input",
+   "source": "openai-gpt-6-2",
+   "note": "Published API rates are $8 input, $0.40 cached input and $40 output per million tokens. The announcement also calls the cached-input change a 60% discount. $0.40 is 95% below the $8 input rate; a 60% discount off $8 would be $3.20, which is not the published rate. Billing uses $0.40."
+  },
+  {
+   "model": "gpt-6.2-sol",
+   "provider": "amazon-bedrock",
+   "input_per_million": null,
+   "cached_input_per_million": null,
+   "output_per_million": null,
+   "price_status": "verify",
+   "availability": "generally available",
+   "cached_discount_wording": "",
+   "source": "bedrock-ga",
+   "note": "Generally available on Amazon Bedrock. The announcement does not publish a token price. Not billed."
+  },
+  {
+   "model": "gpt-6.2-sol",
+   "provider": "azure-foundry",
+   "input_per_million": null,
+   "cached_input_per_million": null,
+   "output_per_million": null,
+   "price_status": "verify",
+   "availability": "not stated in the sources",
+   "cached_discount_wording": "",
+   "source": "foundry-router",
+   "note": "Azure-side price was not published in the sources. Marked [verify]. Not billed."
+  },
+  {
+   "model": "gpt-6.2-sol",
+   "provider": "openai-api",
+   "input_per_million": 2.0,
+   "cached_input_per_million": 0.1,
+   "output_per_million": 10.0,
+   "price_status": "published",
+   "availability": "API rates published",
+   "cached_discount_wording": "",
+   "source": "openai-gpt-6-2",
+   "note": "Published API rates carried forward from the prior Sol generation: $2 input, $0.10 cached input and $10 output per million tokens."
+  }
+ ]
+}

@@ -6,6 +6,9 @@ AI FinOps.
 |---|---|
 | [`__init__.py`](__init__.py) | Package marker |
 | [`token_cost.py`](token_cost.py) | Per-request cost, attribution, reconciliation |
+| [`catalog.py`](catalog.py) | Published model rate card; refuses to bill a `[verify]` row |
+| [`route_sim.py`](route_sim.py) | Single-model vs routed savings on published GPT-6.2 rates |
+| [`agent_value.py`](agent_value.py) | Per-agent cost, assisted value, success rate and verdict |
 | [`routing.py`](routing.py) | System-1 classifier and simulated quality |
 | [`caching.py`](caching.py) | Exact and semantic response cache |
 | [`budgets.py`](budgets.py) | Per-agent and per-tenant budget enforcement |

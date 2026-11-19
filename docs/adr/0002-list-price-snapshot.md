@@ -10,8 +10,14 @@ non-reproducible, and hard-coding prices in code hides where they came from.
 ## Decision
 
 Capture the meters the patterns use into `data/pricing/retail-prices-snapshot.json` with
-`scripts/refresh_prices.py`, label the file as a **list-price snapshot**, and read every price
-through `PriceBook`. Refreshing is a deliberate commit that also regenerates the docs.
+`scripts/refresh_prices.py`, label the file as a **list-price snapshot**, and read every Azure
+list price through `PriceBook`. Refreshing is a deliberate commit that also regenerates the docs.
+
+Published token rates that did not come from that API (the GPT-6.2 API card) live in
+`data/pricing/model-catalog.json`. A row whose source did not publish a price is marked
+`verify` and `token_cost` refuses to bill it. Azure and Bedrock prices for those new models
+are in that state. They are not copied into the snapshot and they are not filled in from the
+API card.
 
 ## Consequences
 

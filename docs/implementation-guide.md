@@ -76,6 +76,10 @@ finops ai
 finops case-study
 ```
 
+`finops ai` prints attribution and the eval gate, then the model rate card, the single-model
+versus routed simulation, the Azure versus Bedrock table, and the per-agent cost and value report.
+`[verify]` cells are models whose price was not published. The command stays offline.
+
 ### 6. The agent
 
 ```bash
