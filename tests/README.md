@@ -18,6 +18,7 @@ pytest suite, offline. Run `pytest -q`.
 | [`test_p09_tagging.py`](test_p09_tagging.py) | Pattern 9 |
 | [`test_p10_cache_egress.py`](test_p10_cache_egress.py) | Pattern 10 |
 | [`test_ai_finops.py`](test_ai_finops.py) | AI FinOps |
+| [`test_model_rates.py`](test_model_rates.py) | GPT-6.2 rate card, routing simulation, Azure vs Bedrock, per-agent value |
 | [`test_agent.py`](test_agent.py) | Analyzer, plans, approvals |
 | [`test_mcp_and_cli.py`](test_mcp_and_cli.py) | MCP server, case study, CLI |
 | [`test_iac.py`](test_iac.py) | Policy JSON, Terraform and Bicep structure; workflow supply-chain guard (pinned actions, permissions, gitleaks, CodeQL, Dependabot) |

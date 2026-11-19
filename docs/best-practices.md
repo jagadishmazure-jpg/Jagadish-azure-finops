@@ -55,14 +55,17 @@ where it is implemented.
 19. **Budgets degrade before they block**, and never cut off a critical agent.
 20. **Fund on ROI, not on spend.** Value assumptions (adoption, minutes saved) are named and
     challenged with the business owner.
+21. **Do not invent a model price.** If a source names a model or a cloud and does not publish a
+    rate, the row stays `[verify]` and the code refuses to bill it. The routing simulation bills
+    only published API rates.
 
 ## Engineering
 
-21. **Deterministic synthetic data** with a `--check` mode, so tests and docs are reproducible.
-22. **OIDC only** for CI/CD, no stored cloud secrets; deploys gated off until configured.
-23. **No real identifiers** in the repo: no subscription IDs, tenant IDs, customer names or
+22. **Deterministic synthetic data** with a `--check` mode, so tests and docs are reproducible.
+23. **OIDC only** for CI/CD, no stored cloud secrets; deploys gated off until configured.
+24. **No real identifiers** in the repo: no subscription IDs, tenant IDs, customer names or
     personal email addresses (enforced by `tests/test_repo_hygiene.py`).
-24. **Pinned, scanned supply chain.** Actions pinned to commit SHAs with read-only default
+25. **Pinned, scanned supply chain.** Actions pinned to commit SHAs with read-only default
     permissions, gitleaks over the full git history, CodeQL, and weekly grouped Dependabot updates
     (enforced by `tests/test_iac.py::test_workflows_are_hardened`). GitHub secret scanning, push
     protection, Dependabot alerts and a `main` ruleset are switched on in the repository settings.

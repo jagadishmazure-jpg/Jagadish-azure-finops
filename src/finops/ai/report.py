@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
-from finops.ai import caching, ptu, roi, routing
+from finops.ai import agent_value, caching, catalog, ptu, roi, route_sim, routing
 from finops.ai.budgets import enforce
 from finops.ai.eval_gate import Candidate, gate
 from finops.ai.token_cost import attribute, reconcile, request_cost
@@ -86,6 +86,7 @@ def analyze() -> dict[str, Any]:
         before = roi.roi(uc, tasks[uc["use_case"]], base["by_use_case"][uc["use_case"]])
         after = roi.roi(uc, tasks[uc["use_case"]], opt_by_uc.get(uc["use_case"], 0.0))
         rois.append({"before": before, "after": after})
+    sim = route_sim.simulate(reqs)
     return {
         "attribution": base,
         "reconcile": reconcile(base["total"], billed),
@@ -99,6 +100,8 @@ def analyze() -> dict[str, Any]:
         "ptu": ptu_view,
         "budget_guard": guard,
         "roi": rois,
+        "route_sim": sim,
+        "agents": agent_value.build(reqs),
     }
 
 
@@ -144,4 +147,17 @@ def report(a: dict[str, Any] | None = None) -> str:
             f"    {bf['use_case']:<26} tasks {bf['tasks']:>6,}  value {money(bf['value']):>10}  cost {money(bf['total_cost']):>9} -> {money(af['total_cost']):>9}  "
             f"ROI {bf['roi_pct']:>6}% -> {af['roi_pct']:>6}%  payback {bf['payback_months']} -> {af['payback_months']} mo  [{af['verdict']}]"
         )
+    sim = a["route_sim"]
+    L.extend(catalog.format_rate_card())
+    L.extend(route_sim.format_sim(sim))
+    labels = {
+        "single-astra": "single astra",
+        "single-sol": "single sol",
+        "routed": "routed",
+        "routed-cache": "routed + cache",
+    }
+    workload = [(labels[row["name"]], row["monthly_cost"]) for row in sim["scenarios"]]
+    L.extend(catalog.format_comparison(workload))
+    L.extend(agent_value.format_rows(a["agents"]))
+    L.extend(catalog.format_sources())
     return "\n".join(L)

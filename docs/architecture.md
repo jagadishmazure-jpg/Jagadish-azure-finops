@@ -4,12 +4,12 @@
 
 | Component | Path | Responsibility |
 |---|---|---|
-| Price book | `src/finops/pricing.py` | Loads the list-price snapshot; hourly, monthly, tiered, reservation and savings plan prices |
+| Price book | `src/finops/pricing.py`, `data/pricing/model-catalog.json` | Azure list prices from the snapshot; published token rates and `[verify]` rows from the model catalog |
 | Synthetic estate | `src/finops/synth.py`, `scripts/generate_data.py` | Deterministic inventory, metrics, FOCUS export, AI request log |
 | Costing | `src/finops/costing.py` | Monthly cost of any inventory item from the price book |
 | FOCUS | `src/finops/focus.py` | FOCUS 1.0 subset writer and reader |
 | Patterns | `src/finops/patterns/p01..p10` | Detection, decision rule, findings with evidence |
-| AI FinOps | `src/finops/ai/` | Attribution, routing, caching, budgets, PTU, ROI, eval gate |
+| AI FinOps | `src/finops/ai/` | Attribution, routing, caching, budgets, PTU, ROI, eval gate, published rate card, routing simulation, per-agent cost and value |
 | Analyzer | `src/finops/agent/analyzer.py` | Rank, dedupe, reconcile to the bill |
 | Plans and approvals | `src/finops/agent/plan.py`, `approval.py` | Digest-bound plans, approval rules, audit log, dry-run executor |
 | MCP server | `src/finops/agent/mcp_server.py` | Seven tools, no approve tool |
