@@ -31,6 +31,8 @@ Add AI FinOps and the real-subscription path:
 - Budgets degrade, then block, and never cut off a critical agent.
 - PTU: 15 units at $10,950 a month cannot break even for this workload.
 - ROI: one use case is negative and cheaper tokens will not fix it.
+- GPT-6.2 routing bills the published API card only. Azure and Bedrock stay `[verify]`. All-Astra
+  versus the routed mix saves $406.16 a month at -0.38 points; all-Sol is blocked.
 - Read-only roles for a real subscription, and why the executor will never be live.
 
 ## Questions to expect

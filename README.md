@@ -17,7 +17,11 @@
   a cheap classifier, prompt and semantic caching, budget guardrails per agent and tenant, PTU vs
   pay-as-you-go break-even, ROI per AI use case, and an **eval gate**: a cost cut only ships if
   quality holds (routing plus caching saves $200.75 a month at -0.45 points; "everything on the
-  small model" is blocked at -10.78 points).
+  small model" is blocked at -10.78 points). A separate rate card prices GPT-6.2 Astra at $8 input
+  / $40 output per million tokens (published cached input $0.40) and Sol at $2 / $10 (cached input
+  $0.10). Azure and Bedrock prices for those models are `[verify]` and are not billed. A two-tier
+  stand-in for Foundry's 44-model router saves $406.16 a month (20.49%) against an all-Astra
+  workload at -0.38 quality points; all-Sol is blocked at -3.70 points.
 - **A FinOps agent over MCP that cannot change anything on its own:** it drafts plans; people
   approve them (bound to a SHA-256 digest, 72-hour expiry, two approvers for irreversible steps);
   execution is a dry run with a hash-chained audit log. There is no approve tool.
@@ -27,7 +31,7 @@
   public IPs), a budget with an action group, a storage lifecycle policy and an autoscale example,
   on the smallest settings. GitHub Actions with OIDC (no secrets), dev to prod approval, and a
   Terraform or Bicep choice, switched off until a subscription is configured.
-- **237 automated tests**, all offline, plus docs whose numbers and code excerpts are regenerated
+- **257 automated tests**, all offline, plus docs whose numbers and code excerpts are regenerated
   from the code and checked in CI.
 
 **Skills demonstrated:** Azure FinOps, Cost Management and FOCUS exports, Azure Advisor, Azure
@@ -95,7 +99,37 @@ Real output of `finops estate`:
 | 9 | Tagging and chargeback | 98.8% of cost tagged, showback for 5 cost centers, one budget forecast at 104.2% | [09-tagging-chargeback](docs/patterns/09-tagging-chargeback.md) |
 | 10 | Cache and egress | $930.38/mo (estimate), mostly incremental DR copies | [10-cache-egress](docs/patterns/10-cache-egress.md) |
 | AI | AI FinOps | $571.02/mo attributed with a $0.00 gap; $200.75/mo shipped through the eval gate | [ai-finops](docs/ai-finops.md) |
+| AI | GPT-6.2 routing | $406.16/mo (20.49%) vs all-Astra on published API rates; Azure and Bedrock `[verify]` | [ai-finops](docs/ai-finops.md) |
 | CS | Case study | $186.99/mo of idle integration and container cost | [case-study](docs/case-study.md) |
+
+## AI model rates
+
+Published rates and `[verify]` rows live in [`data/pricing/model-catalog.json`](data/pricing/model-catalog.json)
+and are printed by `finops ai`. The write-up is [docs/ai-finops.md](docs/ai-finops.md). Azure list
+prices for gpt-4o and gpt-4o-mini stay in the Retail Prices snapshot and are not mixed into this card.
+
+Astra is $8 input and $40 output per million tokens on the published API card. The announcement
+also says a 60% cached-input discount and publishes $0.40 per million cached input tokens, which
+is the rate the code bills. A 60% cut off the $8 input price would be $3.20, and that number is
+not used. Sol is $2 input and $10 output, with published cached input at $0.10.
+
+Azure Foundry and Amazon Bedrock columns for both models are `[verify]`. Bedrock is generally
+available in the source, and that source does not print a token price. The Foundry router source
+does not print Azure prices for these models either. The routing simulation bills only the
+published API card: $406.16 a month saved against all-Astra, with all-Sol blocked by the eval gate.
+Per-agent cost, assisted hours, assisted value and a simulated success rate are in the same report.
+Satisfaction is not in the request log, so it is left unset.
+
+Sources:
+
+- Foundry Models automatic routing across 44 models, and Baseten-hosted open models:
+  <https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/from-model-choice-to-your-durable-advantage-build-ai-that-keeps-improving/4573609>
+- GPT-6.2 Astra and Sol:
+  <https://openai.com/index/introducing-gpt-6-2-astra-sol/>
+- Astra and Sol generally available on Amazon Bedrock:
+  <https://academy.openai.com/public/clubs/openai-on-aws/blogs/gpt-62-astra-and-gpt-62-sol-are-now-available-on-amazon-bedrock-2026-11-18>
+- Agent 365 cost and value analytics:
+  <https://techcommunity.microsoft.com/blog/agent-365-blog/whats-new-in-microsoft-agent-365-ignite-2026/4571753>
 
 ## Architecture
 
@@ -110,7 +144,7 @@ flowchart TB
   end
   subgraph Engine["src/finops"]
     PAT[10 pattern modules]
-    AI[AI FinOps:<br/>attribution, routing, caching,<br/>budgets, PTU, ROI, eval gate]
+    AI[AI FinOps:<br/>attribution, routing, caching,<br/>budgets, PTU, ROI, eval gate,<br/>rate card, agent value]
     AN[Analyzer:<br/>rank, dedupe, reconcile]
     AG[Agent: plan, approval,<br/>audit, dry-run executor]
   end
@@ -153,7 +187,7 @@ Step by step, including connecting to a real subscription in read-only mode:
 ## Test
 
 ```bash
-pytest -q                               # 237 tests, offline
+pytest -q                               # 257 tests, offline
 ruff check . && ruff format --check .
 python scripts/generate_data.py --check # synthetic data matches the generator
 python scripts/render_docs.py --check   # doc outputs and code excerpts match the code
@@ -184,7 +218,7 @@ is `true`. Setup: [docs/deployment.md](docs/deployment.md).
 | Doc | What it covers |
 |---|---|
 | [docs/patterns/](docs/patterns/README.md) | The ten pattern write-ups (13 sections each) |
-| [docs/ai-finops.md](docs/ai-finops.md) | Token attribution, routing, caching, budgets, PTU, ROI, eval gate |
+| [docs/ai-finops.md](docs/ai-finops.md) | Token attribution, routing, caching, budgets, PTU, ROI, eval gate, rate card, agent value |
 | [docs/finops-agent.md](docs/finops-agent.md) | The agent, its MCP tools and the approval model |
 | [docs/case-study.md](docs/case-study.md) | The idle WS1 plan and warm Container App |
 | [docs/implementation-guide.md](docs/implementation-guide.md) | Clean clone to demo, then a real subscription read-only |

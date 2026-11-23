@@ -1,4 +1,4 @@
-# AI FinOps: cost, routing, caching, budgets, PTU and ROI
+# AI FinOps: cost, routing, caching, budgets, PTU, ROI and model rates
 
 **Modules:** [`src/finops/ai/`](../src/finops/ai/) · **Tests:** [`tests/test_ai_finops.py`](../tests/test_ai_finops.py) ·
 **Run:** `finops ai`
@@ -23,10 +23,12 @@ flowchart LR
 ```
 
 The data is a synthetic request log of 6,000 sampled requests, each weighted 10 to represent
-60,000 requests a month across three agents and four tenants (`data/ai/requests.jsonl`). Prices are
-the gpt-4o and gpt-4o-mini meters in the list-price snapshot. Quality is **simulated** (a fixed pass
-rate per model and difficulty, sampled per request id) to show how the gate works; real pass rates
-come from your own eval set.
+60,000 requests a month across three agents and four tenants (`data/ai/requests.jsonl`). The
+reconciled bill uses the gpt-4o and gpt-4o-mini meters in the list-price snapshot. A separate
+rate card prices GPT-6.2 Astra and Sol from the published API rates and leaves Azure and Bedrock
+cells as `[verify]` where those sources did not publish a price. Quality is **simulated** (a fixed
+pass rate per model and difficulty, sampled per request id) to show how the gate works; real pass
+rates come from your own eval set.
 
 ## The full report
 
@@ -65,6 +67,51 @@ come from your own eval set.
     customer-eta-chat          tasks 38,010  value $21,665.70  cost $2,153.05 -> $1,987.48  ROI  906.3% ->  990.1%  payback 2.0 -> 2.0 mo  [scale]
     invoice-exception-triage   tasks 13,180  value $34,268.00  cost $3,137.43 -> $3,116.35  ROI  992.2% ->  999.6%  payback 1.9 -> 1.9 mo  [scale]
     dispatch-shift-summary     tasks  8,810  value    $991.12  cost $1,548.88 -> $1,534.78  ROI  -36.0% ->  -35.4%  payback 43.3 -> 42.5 mo  [rework or retire]
+== model rate card (USD per million tokens: input / cached input / output)
+  foundry router: 44 models, automatic selection by default; per-model prices [verify]
+  baseten on Foundry (public preview): Kimi-K3, GLM 5.3, GLM-5.3-Flash, DeepSeek V4.1-Flash-1017; prices [verify]
+  gpt-6.2-astra    amazon-bedrock   [verify]                         generally available
+  gpt-6.2-astra    azure-foundry    [verify]                         not stated in the sources
+  gpt-6.2-astra    openai-api       $8.00 / $0.40 / $40.00           API rates published
+  gpt-6.2-sol      amazon-bedrock   [verify]                         generally available
+  gpt-6.2-sol      azure-foundry    [verify]                         not stated in the sources
+  gpt-6.2-sol      openai-api       $2.00 / $0.10 / $10.00           API rates published
+  astra cached input: announcement says '60% discount on cached input'; billed rate is $0.40 (a 60% cut off the $8 input rate would be $3.20, which is not billed)
+== routing simulation (published OpenAI API rates; two-tier stand-in for the 44-model router)
+  quality is simulated. two-tier Sol/Astra; the other router models have no published price.
+  unpriced providers (not billed): azure-foundry, amazon-bedrock
+  single gpt-6.2-astra              $1,982.13  quality  98.23%
+  single gpt-6.2-sol                  $495.53  quality  94.53%  BLOCK save $1,486.60 (-3.70 pts) quality -3.70 pts exceeds the -1.0 pt budget
+  routed simple->sol, else astra    $1,575.97  quality  97.85%  SHIP  save $406.16 (-0.38 pts) quality within budget
+  routed + prompt cache             $1,210.29  quality  97.85%  SHIP  save $771.84 (-0.38 pts) quality within budget
+  routed mix: 2,988 requests on sol, 3,012 on astra (of 6,000); save $406.16 (20.49%) vs single astra
+  these totals use the published API card, not the Azure snapshot, so they are not a saving against the reconciled bill
+== azure vs bedrock (GPT-6.2 token prices; [verify] means the source published no price)
+  model            azure-foundry                amazon-bedrock               openai-api reference
+  gpt-6.2-astra    [verify]                     [verify]                     $8.00 / $0.40 / $40.00
+  gpt-6.2-sol      [verify]                     [verify]                     $2.00 / $0.10 / $10.00
+  same workload, USD / month, still not priced where the source published no rate:
+  workload         azure-foundry                amazon-bedrock               openai-api reference
+  single astra     [verify]                     [verify]                     $1,982.13
+  single sol       [verify]                     [verify]                     $495.53
+  routed           [verify]                     [verify]                     $1,575.97
+  routed + cache   [verify]                     [verify]                     $1,210.29
+  bedrock: generally available. azure: availability not stated in the sources.
+== per-agent cost and value
+  signals: token spend, assisted hours, assisted value, simulated success rate, ROI verdict.
+  satisfaction: not logged. routed $ is the published API scenario, not an Azure or Bedrock price.
+  agent                    tasks    token $   asst h   asst value  success  value/$   routed $  verdict
+  dispatch-summarizer      8,810    $138.88     22.0      $991.12   94.89%      7.1    $488.21  rework or retire
+    roi   -36.0% on logged-model tokens ->   -47.8% on routed API rates [rework or retire]
+  eta-assistant           38,010    $223.05    570.1   $21,665.70   97.71%     97.1    $352.10  scale
+    roi   906.3% on logged-model tokens ->   849.4% on routed API rates [scale]
+  invoice-triage          13,180    $209.10    659.0   $34,268.00   95.14%    163.9    $735.66  scale
+    roi   992.2% on logged-model tokens ->   835.3% on routed API rates [scale]
+  sources:
+    Foundry Models: automatic routing across 44 models, and Baseten-hosted open models: https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/from-model-choice-to-your-durable-advantage-build-ai-that-keeps-improving/4573609
+    Introducing GPT-6.2 Astra and Sol: https://openai.com/index/introducing-gpt-6-2-astra-sol/
+    GPT-6.2 Astra and GPT-6.2 Sol on Amazon Bedrock: https://academy.openai.com/public/clubs/openai-on-aws/blogs/gpt-62-astra-and-gpt-62-sol-are-now-available-on-amazon-bedrock-2026-11-18
+    Agent 365 cost and value analytics: https://techcommunity.microsoft.com/blog/agent-365-blog/whats-new-in-microsoft-agent-365-ignite-2026/4571753
 ```
 <!-- /output -->
 
@@ -385,6 +432,174 @@ The combined change (routing, prompt cache and response cache) ships: $200.75 a 
 0.45-point drop. Two candidates are blocked even though they save more: everything on gpt-4o-mini
 would save $536.76 but drops quality by 10.78 points, and the loose semantic cache drops it by 3.08.
 
+## 8. Published rate card
+
+Azure list prices stay in the snapshot. Rates that came from a vendor announcement live in
+[`data/pricing/model-catalog.json`](../data/pricing/model-catalog.json). A row is `published` only
+when the source printed a number. Otherwise it is `[verify]`, the number fields are empty, and
+`token_cost` raises rather than bill a guess.
+
+Sources:
+
+- Foundry model router (44 models, automatic selection on by default, also in AI Gateway) and
+  Baseten-hosted open models:
+  <https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/from-model-choice-to-your-durable-advantage-build-ai-that-keeps-improving/4573609>
+- GPT-6.2 Astra and Sol API rates:
+  <https://openai.com/index/introducing-gpt-6-2-astra-sol/>
+- Astra and Sol generally available on Amazon Bedrock:
+  <https://academy.openai.com/public/clubs/openai-on-aws/blogs/gpt-62-astra-and-gpt-62-sol-are-now-available-on-amazon-bedrock-2026-11-18>
+- Agent 365 cost and value analytics:
+  <https://techcommunity.microsoft.com/blog/agent-365-blog/whats-new-in-microsoft-agent-365-ignite-2026/4571753>
+
+The router source says it chooses among 44 models from OpenAI, Anthropic, xAI, DeepSeek, Meta and
+others. It does not list those models or their prices, so the 44-model set is not billed. Baseten
+on Foundry is in public preview, serverless pay-as-you-go (global or US Data Zone), with
+provisioned throughput announced to follow. The named open models and their prices:
+
+| Model | Price |
+|---|---|
+| Kimi-K3 | [verify] |
+| GLM 5.3 | [verify] |
+| GLM-5.3-Flash | [verify] |
+| DeepSeek V4.1-Flash-1017 | [verify] |
+
+GPT-6.2 rates, USD per million tokens. The OpenAI API column is the published card. Azure Foundry
+prices for these models were not in the sources. The Bedrock announcement says both models are
+generally available and does not print a token price, so that column is `[verify]` too. The API
+rate is not copied across.
+
+| Model | Provider | Input | Cached input | Output | Status |
+|---|---|---|---|---|---|
+| gpt-6.2-astra | OpenAI API | $8.00 | $0.40 | $40.00 | published |
+| gpt-6.2-astra | Azure Foundry | [verify] | [verify] | [verify] | availability not stated |
+| gpt-6.2-astra | Amazon Bedrock | [verify] | [verify] | [verify] | generally available, price unpublished |
+| gpt-6.2-sol | OpenAI API | $2.00 | $0.10 | $10.00 | published |
+| gpt-6.2-sol | Azure Foundry | [verify] | [verify] | [verify] | availability not stated |
+| gpt-6.2-sol | Amazon Bedrock | [verify] | [verify] | [verify] | generally available, price unpublished |
+
+The Astra announcement calls the cached-input change a "60% discount on cached input" and also
+publishes $0.40 per million tokens. $0.40 is 95% below the $8 input rate. A 60% discount off $8
+would be $3.20, and that figure is not billed. Sol's published cached rate is $0.10 per million.
+
+<!-- code: src/finops/ai/catalog.py::token_cost -->
+```python
+def token_cost(
+    model: str,
+    prompt_tokens: float,
+    completion_tokens: float,
+    cached_tokens: float = 0,
+    provider: str = OPENAI,
+) -> float:
+    """USD for one call at a published per-million rate. Refuses a ``[verify]`` row."""
+    r = get(model, provider)
+    if not r.published:
+        raise UnpublishedPrice(f"{provider} {model} is [verify]; the source published no price")
+    pin = r.input_per_million
+    pcached = r.cached_input_per_million
+    pout = r.output_per_million
+    if pin is None or pcached is None or pout is None:
+        raise UnpublishedPrice(f"{provider} {model} is [verify]; the source published no price")
+    cached = min(max(cached_tokens, 0.0), prompt_tokens)
+    return ((prompt_tokens - cached) * pin + cached * pcached + completion_tokens * pout) / 1_000_000
+```
+<!-- /code -->
+
+## 9. Routing-savings simulation
+
+The router claim is that simple requests should not all pay for the frontier model. The other 42
+prices were not published, so the simulation is a two-tier stand-in on the published API card:
+the existing classifier sends a prompt it is sure is simple to Sol, and everything else, including
+anything it is unsure about, to Astra. Quality uses a separate simulated pass rate. It is not a
+benchmark score.
+
+On this month's log that is 2,988 requests on Sol and 3,012 on Astra:
+
+| Workload | Cost / month | Quality | Versus all-Astra |
+|---|---|---|---|
+| Single gpt-6.2-astra | $1,982.13 | 98.23% | baseline |
+| Single gpt-6.2-sol | $495.53 | 94.53% | BLOCK, save $1,486.60, -3.70 pts |
+| Routed (simple to Sol, else Astra) | $1,575.97 | 97.85% | SHIP, save $406.16 (20.49%), -0.38 pts |
+| Routed plus prompt cache | $1,210.29 | 97.85% | SHIP, save $771.84, -0.38 pts |
+
+All-Sol saves more and misses the 1.0-point quality budget, same shape as the gpt-4o-mini result
+above. Routing ships. Prompt caching uses the published cached rates and does not change the
+simulated quality, so it ships too.
+
+These totals are not a saving against the reconciled $571.02 gpt-4o bill. Astra's published output
+rate is $40 per million tokens and the snapshot's gpt-4o output rate is $10. The comparison the
+router asks for is single frontier model versus a routed mix, on one price card.
+
+<!-- code: src/finops/ai/route_sim.py::model_for_route -->
+```python
+def model_for_route(req: dict[str, Any]) -> str:
+    """Sol when the classifier is sure the prompt is simple; Astra otherwise, including when unsure."""
+    tier, _conf = routing.classify(req["prompt"])
+    return SOL if tier == routing.SMALL else ASTRA
+```
+<!-- /code -->
+
+<!-- code: src/finops/ai/route_sim.py::PASS_RATE -->
+```python
+PASS_RATE = {
+    (ASTRA, "simple"): 0.99,
+    (ASTRA, "complex"): 0.97,
+    (SOL, "simple"): 0.98,
+    (SOL, "complex"): 0.90,
+}
+```
+<!-- /code -->
+
+## 10. Azure versus Bedrock
+
+Same models, three columns. Only the API column has a number, and it is a reference, not an Azure
+or Bedrock price. The workload rows reprice the synthetic month at that reference and leave the
+other two clouds `[verify]`.
+
+| | Azure Foundry | Amazon Bedrock | OpenAI API reference |
+|---|---|---|---|
+| gpt-6.2-astra, per million (input / cached / output) | [verify] | [verify] | $8.00 / $0.40 / $40.00 |
+| gpt-6.2-sol, per million (input / cached / output) | [verify] | [verify] | $2.00 / $0.10 / $10.00 |
+| Single Astra, this month | [verify] | [verify] | $1,982.13 |
+| Single Sol, this month | [verify] | [verify] | $495.53 |
+| Routed, this month | [verify] | [verify] | $1,575.97 |
+| Routed plus prompt cache, this month | [verify] | [verify] | $1,210.29 |
+
+Bedrock: both models are generally available. Azure: the sources do not say that these models are
+offered there, and they do not print a price. Fill a `[verify]` cell only from a published meter,
+then re-run the report.
+
+## 11. Per-agent cost and value
+
+Agent 365 describes cost and value together: what the agent spends, assisted hours, assisted
+value, success rate and satisfaction, plus a way to try a different mix before you fund it. This
+log can fill every signal except satisfaction, which is not recorded, so the report leaves it
+unset. Assisted hours and assisted value use the same adoption, minutes and loaded-rate
+assumptions as the ROI section. Success rate is the simulated pass rate on the model the request
+actually called. The routed column is the published API scenario from section 9, not a second bill.
+
+| Agent | Tasks | Token cost | Assisted hours | Assisted value | Success | Value per token $ | Routed API cost | Verdict |
+|---|---|---|---|---|---|---|---|---|
+| dispatch-summarizer | 8,810 | $138.88 | 22.0 | $991.12 | 94.89% | 7.1 | $488.21 | rework or retire |
+| eta-assistant | 38,010 | $223.05 | 570.1 | $21,665.70 | 97.71% | 97.1 | $352.10 | scale |
+| invoice-triage | 13,180 | $209.10 | 659.0 | $34,268.00 | 95.14% | 163.9 | $735.66 | scale |
+
+Token cost still sums to the reconciled $571.02. Moving the same requests onto the routed API
+rates raises dispatch from $138.88 to $488.21 and invoice-triage from $209.10 to $735.66, because
+prompts that are not classified as simple stay on Astra. Fully loaded ROI, which is dominated by
+platform and amortized build cost, moves from -36.0% to -47.8% for dispatch and from 992.2% to
+835.3% for invoice-triage.
+Dispatch stays "rework or retire". The other two stay "scale". Cheaper or dearer tokens do not
+change that call. The assumptions to challenge are still adoption and minutes saved.
+
+<!-- code: src/finops/ai/agent_value.py::assisted -->
+```python
+def assisted(uc: dict[str, Any], tasks: float) -> tuple[float, float]:
+    """Assisted hours and assisted value for ``tasks`` under the use-case assumptions."""
+    hours = tasks * uc["adoption"] * uc["minutes_saved_per_task"] / 60
+    return hours, hours * uc["loaded_rate_per_hour"]
+```
+<!-- /code -->
+
 ## Risks and guardrails
 
 | Risk | Guardrail |
@@ -395,12 +610,23 @@ would save $536.76 but drops quality by 10.78 points, and the loose semantic cac
 | Stale cached answers | TTL, entity-number match, cacheable intents only |
 | Runaway agent spend | Per-agent and per-tenant budgets that degrade, then block, non-critical agents |
 | Over-buying PTU | Break-even utilization reported; hourly PTU refused when it cannot break even |
+| Invented cloud price | `[verify]` rows have no number, and `token_cost` refuses to bill them |
+| Reading an API rate as an Azure or Bedrock rate | The comparison table keeps those columns `[verify]`; the simulation says which card it used |
 
 ## Limitations
 
-- Quality is simulated; plug in a real golden set and judge before trusting any SHIP.
-- Only two models and one region are priced.
+- Quality is simulated, including the GPT-6.2 pass rates. Plug in a real golden set and judge
+  before trusting any SHIP.
+- The Azure snapshot prices gpt-4o and gpt-4o-mini in one region. GPT-6.2 Astra and Sol are priced
+  from the published API card only. Azure Foundry and Amazon Bedrock cells for those models are
+  `[verify]`.
+- The Foundry router spans 44 models, and the Baseten open models are named in that source.
+  Neither published prices. The routing simulation is a two-tier stand-in, not a 44-way bill.
+- Astra's announcement says "60% discount on cached input" and publishes $0.40 per million tokens.
+  Billing uses $0.40. $3.20 (60% off the $8 input rate) is not a rate in the card.
 - Embeddings, AI Search and agent platform costs appear only as the ROI "platform" figure.
+- Satisfaction, which the Agent 365 announcement lists as a value signal, is not in this log. The
+  routed column is a scenario, not a statistical spend forecast.
 
 ## Interview talking points
 
@@ -410,4 +636,7 @@ would save $536.76 but drops quality by 10.78 points, and the loose semantic cac
   blocked. Routing plus caching saves $200.75 and loses 0.45."
 - "Budgets degrade before they block, and never cut off a critical agent."
 - "ROI, not spend, decides what to scale. One use case is negative ROI, and cheaper tokens will not
-  save it."
+  save it. Repricing it onto Astra makes the token line worse and the verdict does not flip."
+- "Astra is $8 input and $40 output per million on the published API card, cached input $0.40.
+  Azure and Bedrock are `[verify]`. Routing Sol in front of Astra saves $406.16 a month against
+  all-Astra and loses 0.38 points. All-Sol saves $1,486.60 and is blocked at -3.70 points."
